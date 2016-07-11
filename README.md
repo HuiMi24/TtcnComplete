@@ -1,1 +1,4 @@
-# Sublime-text-3-TTCN-3-syntax-highlight
+# Sublime TTCN3 plugin
+1. TTCN3 syntax highlight
+2. ASN synatax highlight
+3. Aotu completions
