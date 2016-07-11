@@ -12,9 +12,10 @@ import os
 import json
 from ..tools import Tools
 from .completions_dict_generator import CompleteDictGenerator
+from .base_complete import BaseCompleter
 
 
-class TtcnCompleter:
+class TtcnCompleter(BaseCompleter):
     """A class for ttcn completions
 
     Attributes:
@@ -49,7 +50,7 @@ class TtcnCompleter:
             self.tags_file_content = f.readlines()
             f.close()
 
-        type_tags_path = view.window().folders()[0] + '/' + 'test.tags'
+        type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
         if not (view.window().folders() and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
@@ -122,43 +123,17 @@ class TtcnCompleter:
                 return import_modules
 
             @staticmethod
-            def _get_module_name_for_tags_file(tags_file_context, type_name):
-                type_pattern = '\s*%s\s+([\w/\.]+)' % type_name
-                res = []
-                logging.debug(" _get_module_name_for_tags_file %s", type_pattern)
-                for line in tags_file_context:
-                    m = re.match(type_pattern,line)
-                    if m:
-                        logging.debug("matched ............... %s", m.group(1))
-                        res.append(m.group(1))
-                return res
-
-            @staticmethod
-            def _check_type_from_module(import_modules, tags_moudles):
-                for tags_module in tags_moudles:
-                    for import_module in import_modules:
-                        if import_module == os.path.basename(tags_module).split('.')[0]:
-                            return tags_module
-                return
-
-            @staticmethod
             def _get_completions_from_file(root_path, variable_type, variables,module_name):
                 for i in range(len(variables)):
                     variable = variables[i]
                     if i > 0:
                         temp = [ [sub.get('type_name'), sub.get('module_name')] \
                             for sub in comp_dict.get(variable_type) if sub.get('variable_name') == variable]
-                        print(temp)
                         variable_type = temp[0][0]
                         module_name = temp[0][1]
                         logging.debug("variable type is %s", variable_type)
                         logging.debug("module name is %s", module_name)
                     if module_name:
-                        #logging.debug("open dict file %s ", os.path.join(completion_file_folder, module_name))
-                        #with open(os.path.join(completion_file_folder, module_name)) as f:
-                        #    comp_dict = json.load(f) 
-                        print("rrrr", os.path.join(root_path, module_name))
-
                         c = CompleteDictGenerator(module_name,
                                                   root_path,
                                                   variable_type)
@@ -180,8 +155,8 @@ class TtcnCompleter:
             logging.debug(" variable_type is null")
             return completions
         import_modules = Parser.get_import_modules(flie_body_lines)
-        tags_moudles = Parser._get_module_name_for_tags_file(self.type_tags_file_content, variable_type)
-        module_name = Parser._check_type_from_module(import_modules, tags_moudles)
+        tags_moudles = self._get_module_name_for_tags_file(self.type_tags_file_content, variable_type)
+        module_name = self._check_type_from_module(import_modules, tags_moudles)
         logging.debug(" module name is %s", module_name)
         if module_name:
             completions = Parser._get_completions_from_file(view.window().folders()[0],

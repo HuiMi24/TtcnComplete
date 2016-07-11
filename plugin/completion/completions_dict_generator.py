@@ -4,10 +4,11 @@ import os
 import subprocess
 import json
 import sys
+from .base_complete import BaseCompleter
 
 #logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
 
-class CompleteDictGenerator(object):
+class CompleteDictGenerator(BaseCompleter):
     """docstring for CompleteDictGenerator"""
     completion_result = None
     file_name = None
@@ -21,9 +22,6 @@ class CompleteDictGenerator(object):
         self.file_name = file_name
         self.root_path = root_path
         self.type_name = type_name
-        print("root_path", root_path)
-        print("file_name", file_name)
-        print("................", os.path.join(root_path, file_name))
         with open(os.path.join(root_path, file_name), 'r') as f:
             self.file_context = f.readlines()
 
@@ -31,23 +29,10 @@ class CompleteDictGenerator(object):
         self.import_modules = CompleteDictGenerator._get_import_module(self.file_context)
         self.import_modules.append(os.path.basename(self.file_name).split('.')[0])
 
-        with open(os.path.join(root_path, 'test.tags'), 'r+') as fo:
+        with open(os.path.join(root_path, '.type_tags'), 'r+') as fo:
             self.tags_file_context = fo.readlines()
 
         self.find_type = False
-        
-
-    @staticmethod
-    def _get_module_name_for_tags_file(tags_file_context, type_name):
-        #fo = open(tags_file, 'r+')
-        type_pattern = '\s*%s\s+([\w/\.]+)' % type_name
-        #file_context = fo.readlines()
-        res = []
-        for line in tags_file_context:
-            m = re.match(type_pattern,line)
-            if m:
-                res.append( m.group(1))
-        return res
 
     def parse_type(self):
         if self.type_name:
@@ -80,8 +65,8 @@ class CompleteDictGenerator(object):
                         sub_type_name = m.group(2)
                         sub_variable_name = m.group(3)
                         logging.debug(" sub_type_name is %s, sub_variable_name is %s", sub_type_name, sub_variable_name)
-                        tags_moudles = CompleteDictGenerator._get_module_name_for_tags_file(self.tags_file_context, sub_type_name)
-                        module = CompleteDictGenerator._check_type_from_module(self.import_modules, 
+                        tags_moudles = self._get_module_name_for_tags_file(self.tags_file_context, sub_type_name)
+                        module = self._check_type_from_module(self.import_modules, 
                                                          tags_moudles)
                         logging.debug(" module name for type %s is %s", sub_type_name, module)
 
@@ -105,14 +90,6 @@ class CompleteDictGenerator(object):
         for root, dirs, files in os.walk(path):
             if name in files:
                 return os.path.join(root, name)
-
-    @staticmethod
-    def _check_type_from_module(import_modules, tags_moudles):
-        for tags_module in tags_moudles:
-            for import_module in import_modules:
-                if import_module == os.path.basename(tags_module).split('.')[0]:
-                    return tags_module
-        return
 
     @staticmethod
     def _get_import_module(file_context):
