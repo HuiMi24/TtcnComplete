@@ -1,0 +1,10 @@
+{
+
+
+	// triggers for auto-completion
+	"triggers" : ["."],
+
+	// debug_mode
+	"debug_mode" : false
+
+}

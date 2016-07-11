@@ -1,0 +1,644 @@
+/**
+*  QC Test case ID          QC Test Name                                          Interfaces in use in testcase
+*  -----------------------  ----------------------------------------------------  -----------------------------
+*
+*  NS_100_166_0001          ID_Recovery_UE_In_ ECM_CONN_EMM_REG                      [S1, S11, S6A]
+*
+*  NS_100_166_0002          ID_Recovery_UE_In_ECM_IDLE_EMM_DEREG                     [S1, S11, S6A]
+*
+*  NS_100_166_0003          ID_Recovery_UE_In_ECM_IDLE_EMM_REG                       [S1, S11, S6A]
+*
+**/
+
+/****************************************************************************
+ *
+ * File..........: NS_100_166_ID_Recovery.ttcn
+ * Description...: ID allocation recovery.
+ * Authors.......: Flexi NS
+ *
+ * Version (control) ino:
+ * Release.......: $Name:  $ (If this is empty, check out is not done by using release tag)
+ * Version.......: $Id: NS_100_166_ID_Recovery.ttcn,v 0.1 2011/04/13 15:24:00 j4lahti Exp $
+ *
+ ******************************************************************************
+
+ ******************************************************************************/
+
+module NS_100_166_ID_Recovery
+{
+
+  import from NAS        language "ASN.1:1997" all
+
+  import from S1TCVRecords {
+    type
+    EnbParameters; }
+
+  import from ParametersRecord {
+    type
+    SubscriberParameters, SubscriberParametersTable; }
+
+  import from S1Defaults {
+    altstep
+    d_S1SyncDefault; }
+
+  import from S1PortFunctions {
+    function
+    f_receive; }
+
+  import from S1apProcedures {
+    function
+    f_resetProcedure_MME_initiated_partial; }
+
+  import from DiameterCommonBehaviourMme {
+    function
+    f_Postamble_S6a, f_preambleDiameter; }
+
+  import from ExtSync {
+    function
+    f_connect4SelfOrClientExternalSync, f_disconnect4SelfOrClientExternalSync,
+    f_selfOrClientExternalSyncAndVerdict; }
+
+  import from GtpV2CommonBehaviour {
+    function
+    f_preamble_S11, f_postamble_S11; }
+
+  import from GtpV2Defaults {
+    altstep
+    d_S11SyncDefault, d_GtpV2CommonDefault; }
+
+  import from InitParameters {
+    function
+    f_enbParameters,
+    f_SubscriberParameters,
+    f_enb2Parameters; }
+
+  import from MmeParameters {
+    modulepar
+    all; }
+
+  import from NokiaSyncLib {
+    const
+    c_poSyncPoint, c_tbSyncPoint;
+    function
+    f_connect4SelfOrClientSync, f_disconnect4SelfOrClientSync,
+    f_selfOrClientSyncAndVerdict, f_selfOrClientSyncAndVerdictPR,
+    f_serverSyncClientsAndStop; }
+
+  import from DIAM_IF {
+    type
+    DIAMComp;
+    function
+    f_initS6; }
+
+  import from S1_IF {
+    type
+    S1Comp;
+    function
+    f_initS1; }
+
+  import from S11_IF {
+    type
+    GTPV2Comp;
+    function
+    f_initS11; }
+
+  import from TestSystem {
+    type
+    MTC, TSI; }
+
+  import from NokiaVerdictControlLib {
+    type
+    FncRetCode;
+    function
+    f_setVerdict; }
+
+  import from NokiaTimeLib {
+    function
+    f_sleep; }
+
+  import from S1apCommonBehaviour {
+    function
+    f_preamble_S1, f_postamble_S1; }
+
+  import from GtpV2ProceduresMme {
+    function
+    f_s11_CreateSessionBasic, f_s11_DeleteSessionBasic,
+    f_s11_ModifyBearerBasic,
+    f_s11_ModifyBearerBasic_ServiceRequest,
+    f_s11_ReleaseAccessBearersBasic,
+    f_s11_common_create,
+    f_s11_common_delete,
+    f_s11_common_ReleaseAccessBearers,
+    f_s11_common_service_req,
+    f_s11_pre_case,
+    f_s11_post_case; }
+
+  import from S1PdpProcedures {
+    function
+    f_s1_BasicServiceRequestWithSecurity; }
+
+  import from S1ReleaseProcedures {
+    function
+    f_s1_UEContextRelease_srs; }
+
+  import from S1AttachProcedures {
+    function
+    f_s1_BasicAttachWithSecurityAes, f_s1_BasicAttachWithSecurity_with_new_guti, f_s1_BasicAttachWithSecurity_with_old_guti,
+    f_s1_BasicAttachWithSecurity_with_guti; }
+
+  import from S1DetachProcedures {
+    function
+    f_s1_BasicDetachWithSecurity; }
+
+  import from DiameterProceduresMme {
+    function
+    f_receiveAirAndSendResponse,
+    f_BasicUpdateLocationWithAuthentication,
+    f_BasicReceiveULRAndSendResponse,
+    f_receiveAirAndSendResponse,
+    f_CloseHSSComponent,
+    f_receiveCerAndSendResponse; }
+
+  import from NokiaSyncLib { type SyncPointList };
+  import from HssGeneralPtcProcedures{
+      function f_hSS_BasicUpdateLocationWithAuthentication,
+      f_hss_pre_case,
+      f_hss_post_case,
+      f_hSS_AIR_AIA_ULR_ULA;}
+
+/************************************* NS_100_166_0001 ******************************************************/  
+/**
+*  @purpose  NS_100_166_0001 to ensure that the ID allocation works correctly in case  
+*            MMDU restart, ID which is already in use is not allocated for any other subscriber. 
+*
+*  @author   FT19, Tieto
+*
+*  @desc     Two Attach, two eNBs. Simple MMDU-0 Reset while subscriber
+*             in EMM REGISTERED. Second attach after MMDU-0 recovery.
+*               
+**/
+
+  testcase NS_100_166_0001() runs on MTC system TSI {
+    var S1Comp eNB := S1Comp.create("ENB");
+    var S1Comp eNB2 := S1Comp.create("ENB2");
+    var GTPV2Comp sGW := GTPV2Comp.create("SGW");
+    var DIAMComp hSS := DIAMComp.create("HSS");
+
+    eNB.start( f_eNB_NS_100_166_0001 () );
+    eNB2.start( f_eNB2_NS_100_166_0001 () );
+    sGW.start( f_sGW_NS_100_166_0001  () );
+    hSS.start( f_hSS_NS_100_166_0001  () );
+
+    f_serverSyncClientsAndStop(4,{"init","attach","ZMMO","reset","cercea","restart","attach2","ZMMO_2","detach","detach2",c_poSyncPoint});
+
+  }
+
+  function f_eNB_NS_100_166_0001 () runs on S1Comp {
+    var FncRetCode v_ret := e_error;
+    var template SubscriberParameters v_subscriberParameters;
+    var template SubscriberParametersTable v_subscriberParametersTable;
+    var template EnbParameters v_enb_params;
+
+    g_v_extSyncTimeGuard := 300.0;
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+    f_connect4SelfOrClientExternalSync(g_v_extSyncTimeGuard);
+
+    //SCTP Connection
+    f_enbParameters(v_enb_params);
+    v_ret := f_preamble_S1 (v_enb_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);
+
+    f_SubscriberParameters(v_subscriberParameters);
+
+    //Attach Subs 1
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_sleep (4.0);
+    f_selfOrClientExternalSyncAndVerdict("ZMMO",v_ret);
+
+    //Reset
+    //v_ret := f_resetProcedure_MME_initiated_partial(*);
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientExternalSyncAndVerdict("restart",v_ret);
+
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+    f_sleep (1.0);
+
+    f_selfOrClientExternalSyncAndVerdict("ZMMO_2",v_ret);
+
+    //Detach Subs 1
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+    f_disconnect4SelfOrClientExternalSync();
+
+  }
+
+
+  function f_eNB2_NS_100_166_0001  () runs on S1Comp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+    var template EnbParameters v_enb2_params;
+
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+
+    // SCTP Connection
+    f_enb2Parameters(v_enb2_params);
+    v_ret := f_preamble_S1 (v_enb2_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);   
+
+    //Attach Subs 2
+    f_SubscriberParameters(v_subscriberParameters2);
+    v_subscriberParameters2.s1.eNB_UE_S1AP_ID := mp_eNB_UE_S1AP_ID2;
+    v_subscriberParameters2.s1.imsi := mp_eNAS_iMSI_2;
+
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO",v_ret);
+
+    //Reset
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientSyncAndVerdict("restart",v_ret);
+
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO_2",v_ret);
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+
+    //Detach Subs 2
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+
+  }
+
+ /***************** s11*****************/
+
+  function f_sGW_NS_100_166_0001  () runs on GTPV2Comp {
+    var template SubscriberParameters v_subscriberParameters;  //for subscriber 1
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+
+    f_SubscriberParameters(v_subscriberParameters);
+    f_s11_pre_case();
+    f_s11_common_create(v_subscriberParameters, {"attach", "ZMMO", "reset", "cercea", "restart"});
+    f_SubscriberParameters(v_subscriberParameters2);
+    f_s11_common_create(v_subscriberParameters2, {"attach2", "ZMMO_2"});
+    f_s11_common_delete(v_subscriberParameters, {"detach"});
+    f_s11_common_delete(v_subscriberParameters2, {"detach2"});
+    f_s11_post_case();   
+  }
+
+/////////////////////// S6A interface ///////////////////////////////////////////7
+
+  function f_hSS_NS_100_166_0001 () runs on DIAMComp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters_1;
+    var template SubscriberParameters v_subscriberParameters_2;
+    var template SubscriberParametersTable v_subscriberParametersTable;
+    f_SubscriberParameters(v_subscriberParameters_1);
+    f_SubscriberParameters(v_subscriberParameters_2);
+    v_subscriberParameters_2.s6a.r_msisdn := mp_s6a_msisdn_2;
+
+    f_hss_pre_case(v_subscriberParameters_1);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_1, {"attach", "ZMMO", "reset"}); 
+    g_v_s6_defaultReceiveTime := 120.0;
+    f_receiveCerAndSendResponse(v_subscriberParameters_1);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientSyncAndVerdict("restart",v_ret);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_2, {"attach2", "ZMMO_2", "detach", "detach2"}); 
+    f_hss_post_case(v_subscriberParameters_2);
+  }
+
+/************************************* NS_100_166_0002 ******************************************************/  
+/**
+*  @purpose  NS_100_166_0002 to ensure that the ID allocation works correctly in case 
+*            MMDU restart, ID which is already in use is not allocated for any other subscriber. 
+*
+*  @author   FT19, Tieto
+*
+*  @desc     Two Attach, two eNBs. Simple MMDU-0 Reset while subscriber
+*            in ECM IDLE, EMM DEREGISTERED. Second attach after MMDU-0 recovery.  
+*               
+**/
+
+  testcase NS_100_166_0002() runs on MTC system TSI {
+    var S1Comp eNB := S1Comp.create("ENB");
+    var S1Comp eNB2 := S1Comp.create("ENB2");
+    var GTPV2Comp sGW := GTPV2Comp.create("SGW");
+    var DIAMComp hSS := DIAMComp.create("HSS");
+
+    eNB.start( f_eNB_NS_100_166_0002 () );
+    eNB2.start( f_eNB2_NS_100_166_0002 () );
+    sGW.start( f_sGW_NS_100_166_0002  () );
+    hSS.start( f_hSS_NS_100_166_0002  () );
+
+    f_serverSyncClientsAndStop(4,{"init","attach","ZMMO","detach","ZMMO_2","reset","cercea","restart","attach2","ZMMO_3","detach2",c_poSyncPoint});
+
+  }
+
+  function f_eNB_NS_100_166_0002 () runs on S1Comp {
+    var FncRetCode v_ret := e_error;
+    var template SubscriberParameters v_subscriberParameters;
+    var template SubscriberParametersTable v_subscriberParametersTable;
+    var template EnbParameters v_enb_params;
+
+    g_v_extSyncTimeGuard := 300.0;
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+    f_connect4SelfOrClientExternalSync(g_v_extSyncTimeGuard);
+
+    f_enbParameters(v_enb_params);
+    v_ret := f_preamble_S1 (v_enb_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);
+    f_SubscriberParameters(v_subscriberParameters);
+
+    //Attach Subs 1
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_sleep (4.0);
+    f_selfOrClientExternalSyncAndVerdict("ZMMO",v_ret);
+
+    //Detach Subs 1
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+    f_sleep (2.0);
+    f_selfOrClientExternalSyncAndVerdict("ZMMO_2",v_ret);
+
+    //Reset
+    //v_ret := f_resetProcedure_MME_initiated_partial(*);
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientExternalSyncAndVerdict("restart",v_ret);
+
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+    f_sleep (1.0);
+
+    f_selfOrClientExternalSyncAndVerdict("ZMMO_3",v_ret);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+    f_disconnect4SelfOrClientExternalSync();
+  }
+
+
+  function f_eNB2_NS_100_166_0002  () runs on S1Comp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+    var template EnbParameters v_enb2_params;
+
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+
+    // SCTP Connection
+    f_enb2Parameters(v_enb2_params);
+    v_ret := f_preamble_S1 (v_enb2_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);
+
+    //Attach Subs 2
+    f_SubscriberParameters(v_subscriberParameters2);
+    v_subscriberParameters2.s1.eNB_UE_S1AP_ID := mp_eNB_UE_S1AP_ID2;
+    v_subscriberParameters2.s1.imsi := mp_eNAS_iMSI_2;
+
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO",v_ret);
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO_2",v_ret);
+
+    //Reset
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientSyncAndVerdict("restart",v_ret);
+
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+
+    f_selfOrClientSyncAndVerdict("ZMMO_3",v_ret);
+
+    //Detach Subs 2
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+
+  }
+
+ /***************** s11*****************/
+
+  function f_sGW_NS_100_166_0002  () runs on GTPV2Comp {
+    var template SubscriberParameters v_subscriberParameters;  //for subscriber 1
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+
+    f_SubscriberParameters(v_subscriberParameters);
+    f_s11_pre_case();
+    f_s11_common_create(v_subscriberParameters, {"attach", "ZMMO"});
+    f_s11_common_delete(v_subscriberParameters, {"detach", "ZMMO_2", "reset", "cercea", "restart"});
+    f_SubscriberParameters(v_subscriberParameters2);
+    f_s11_common_create(v_subscriberParameters2, {"attach2", "ZMMO_3"});
+    f_s11_common_delete(v_subscriberParameters2, {"detach2"});
+    f_s11_post_case();
+  }
+
+/////////////////////// S6A interface ///////////////////////////////////////////7
+
+  function f_hSS_NS_100_166_0002 () runs on DIAMComp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters_1;
+    var template SubscriberParameters v_subscriberParameters_2;
+
+    f_SubscriberParameters(v_subscriberParameters_1);
+    f_SubscriberParameters(v_subscriberParameters_2);
+    v_subscriberParameters_2.s6a.r_msisdn := mp_s6a_msisdn_2;
+
+    f_hss_pre_case(v_subscriberParameters_1);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_1, {"attach", "ZMMO", "detach", "ZMMO_2", "reset"});
+    //g_v_s6_defaultReceiveTime := 120.0;
+    //f_receiveCerAndSendResponse(v_subscriberParameters_1);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientSyncAndVerdict("restart",v_ret);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_2, {"attach2", "ZMMO_3", "detach2"});
+    f_hss_post_case(v_subscriberParameters_2);
+  }
+  
+/************************************* NS_100_166_0003 ******************************************************/  
+/**
+*  @purpose  NS_100_166_0003 ensure that the ID allocation works correctly in case MMDU restart, 
+*            ID which is already in use is not allocated for any other subscriber. 
+*
+*  @author   FT19, Tieto
+*
+*  @desc     Two Attach, two eNBs. Simple MMDU-0 Reset while subscriber
+*            in ECM IDLE, EMM REGISTERED. Second attach after MMDU-0 recovery.  
+*               
+**/
+  
+  testcase NS_100_166_0003() runs on MTC system TSI {
+    var S1Comp eNB := S1Comp.create("ENB");
+    var S1Comp eNB2 := S1Comp.create("ENB2");
+    var GTPV2Comp sGW := GTPV2Comp.create("SGW");
+    var DIAMComp hSS := DIAMComp.create("HSS");
+
+    eNB.start( f_eNB_NS_100_166_0003 () );
+    eNB2.start( f_eNB2_NS_100_166_0003 () );
+    sGW.start( f_sGW_NS_100_166_0003  () );
+    hSS.start( f_hSS_NS_100_166_0003  () );
+
+    f_serverSyncClientsAndStop(4,{"init","attach","uerelease","ZMMO","reset","cercea","restart","attach2","serreq","ZMMO_2","detach","detach2",c_poSyncPoint});
+
+  }
+
+  function f_eNB_NS_100_166_0003 () runs on S1Comp {
+    var FncRetCode v_ret := e_error;
+    var template SubscriberParameters v_subscriberParameters;
+    var template SubscriberParametersTable v_subscriberParametersTable;
+    var template EnbParameters v_enb_params;
+
+    g_v_extSyncTimeGuard := 300.0;
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+    f_connect4SelfOrClientExternalSync(g_v_extSyncTimeGuard);
+
+    f_enbParameters(v_enb_params);
+    v_ret := f_preamble_S1 (v_enb_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);
+    f_SubscriberParameters(v_subscriberParameters);
+
+    //Attach Subs 1
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_sleep (4.0);
+
+    //Context Release
+    v_ret :=  f_s1_UEContextRelease_srs(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("uerelease",v_ret);
+    f_selfOrClientExternalSyncAndVerdict("ZMMO",v_ret);
+
+
+    //Reset
+    //v_ret := f_resetProcedure_MME_initiated_partial(*);
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientExternalSyncAndVerdict("restart",v_ret);
+
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+    f_sleep (1.0);
+
+    //Service Request
+    v_ret := f_s1_BasicServiceRequestWithSecurity (v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("serreq",v_ret);
+    f_sleep (1.0);
+    f_selfOrClientExternalSyncAndVerdict("ZMMO_2",v_ret);
+
+    //Detach Subs 1
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters);
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+    f_disconnect4SelfOrClientExternalSync();
+
+  }
+
+
+  function f_eNB2_NS_100_166_0003  () runs on S1Comp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+    var template EnbParameters v_enb2_params;
+
+    f_connect4SelfOrClientSync();
+    g_v_syncDefault := activate(d_S1SyncDefault());
+
+    f_enb2Parameters(v_enb2_params);
+    v_ret := f_preamble_S1 (v_enb2_params);
+    f_selfOrClientSyncAndVerdict("init",v_ret);
+    f_selfOrClientSyncAndVerdict("attach",v_ret);
+    f_selfOrClientSyncAndVerdict("uerelease",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO",v_ret);
+    
+    //Reset
+    f_selfOrClientSyncAndVerdict("reset",v_ret);
+    f_selfOrClientSyncAndVerdict("cercea",v_ret);
+    f_selfOrClientSyncAndVerdict("restart",v_ret);
+    f_sleep (6.0);
+    //Attach Subs 2
+    f_SubscriberParameters(v_subscriberParameters2);
+    v_subscriberParameters2.s1.eNB_UE_S1AP_ID := mp_eNB_UE_S1AP_ID2;
+    v_subscriberParameters2.s1.imsi := mp_eNAS_iMSI_2;
+
+    v_ret := f_s1_BasicAttachWithSecurityAes(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("attach2",v_ret);
+    f_selfOrClientSyncAndVerdict("serreq",v_ret);
+    f_selfOrClientSyncAndVerdict("ZMMO_2",v_ret);
+
+    f_selfOrClientSyncAndVerdict("detach",v_ret);
+
+    //Detach Subs 2
+    v_ret := f_s1_BasicDetachWithSecurity(v_subscriberParameters2);
+    f_selfOrClientSyncAndVerdict("detach2",v_ret);
+
+    f_postamble_S1 ();
+    f_selfOrClientSyncAndVerdict(c_poSyncPoint,v_ret);
+    f_disconnect4SelfOrClientSync();
+
+  }
+
+ /***************** s11*****************/
+
+  function f_sGW_NS_100_166_0003  () runs on GTPV2Comp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters;  //for subscriber 1
+    var template SubscriberParameters v_subscriberParameters2; //for subscriber 2
+    var template SubscriberParametersTable v_subscriberParametersTable;
+
+    f_SubscriberParameters(v_subscriberParameters);
+    f_s11_pre_case();
+    f_s11_common_create(v_subscriberParameters, {"attach"});
+    f_s11_common_ReleaseAccessBearers(v_subscriberParameters, { "uerelease","ZMMO","reset","cercea","restart"});
+    f_SubscriberParameters(v_subscriberParameters2);
+    f_s11_common_create(v_subscriberParameters2, {"attach2"});
+    f_s11_common_service_req(v_subscriberParameters2, {"serreq", "ZMMO_2"});
+    f_s11_common_delete(v_subscriberParameters, {"detach"});
+    f_s11_common_delete(v_subscriberParameters2, {"detach2"});
+    f_s11_post_case();   
+
+  }
+
+/////////////////////// S6A interface ///////////////////////////////////////////7
+
+  function f_hSS_NS_100_166_0003 () runs on DIAMComp {
+    var FncRetCode v_ret := e_success;
+    var template SubscriberParameters v_subscriberParameters_1;
+    var template SubscriberParameters v_subscriberParameters_2;
+
+    v_subscriberParameters_1.
+    testcase.
+
+    f_SubscriberParameters(v_subscriberParameters_1);
+    f_SubscriberParameters(v_subscriberParameters_2);
+    v_subscriberParameters_2.s6a.r_msisdn := mp_s6a_msisdn_2;
+    f_hss_pre_case(v_subscriberParameters_1);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_1, {"attach", "uerelease","ZMMO","reset"}); 
+    //g_v_s6_defaultReceiveTime := 120.0;
+    //v_ret := f_receiveCerAndSendResponse(v_subscriberParameters_1);
+    f_selfOrClientSyncAndVerdict("cercea", v_ret);
+    f_selfOrClientSyncAndVerdict("restart", v_ret);
+    f_hSS_AIR_AIA_ULR_ULA(v_subscriberParameters_2, {"attach2", "serreq","ZMMO_2","detach", "detach2"}); 
+    f_hss_post_case(v_subscriberParameters_2);
+
+  }
+}
