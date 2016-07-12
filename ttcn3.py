@@ -65,9 +65,7 @@ class TtcnComplete(sublime_plugin.EventListener):
 
         if completer.async_completions_ready:
             completer.async_completions_ready = False
-            print(".........ready")
-            #return [['b'], ['c']]s
-            print("dddd", completer.completions)
+            logging.debug(" completions result is %s", completer.completions)
             return (completer.completions)
 
         # Verify that character under the cursor is one allowed trigger

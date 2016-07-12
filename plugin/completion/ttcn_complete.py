@@ -10,10 +10,13 @@ import re
 import logging
 import os
 import json
+import imp
 from ..tools import Tools
 from .completions_dict_generator import CompleteDictGenerator
 from .base_complete import BaseCompleter
+from . import base_complete
 
+imp.reload(base_complete)
 
 class TtcnCompleter(BaseCompleter):
     """A class for ttcn completions
@@ -46,17 +49,16 @@ class TtcnCompleter(BaseCompleter):
         if not (view.window().folders() and os.path.exists(tags_path)):
             tags_file_content = []
         else:
-            f = open(tags_path, 'r+')
-            self.tags_file_content = f.readlines()
-            f.close()
+            with open(tags_path, 'r+') as f:
+                self.tags_file_content = f.readlines()
 
         type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
+        logging.debug("open type tags file %s", type_tags_path)
         if not (view.window().folders() and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
-            f = open(tags_path, 'r+')
-            self.type_tags_file_content = f.readlines()
-            f.close()
+            with open(type_tags_path, 'r+') as f:
+                self.type_tags_file_content = f.readlines()
         self.completed_views.append(view.buffer_id())
 
     def exist_for_view(self, view_id):
