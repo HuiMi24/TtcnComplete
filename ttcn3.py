@@ -54,7 +54,7 @@ class TtcnComplete(sublime_plugin.EventListener):
     
     def on_query_completions(self, view, prefix, locations):
 
-        print("on_query_completions view id is %s " % view.buffer_id())
+        logging.debug("on_query_completions view id is %s " % view.buffer_id())
         if not Tools.is_valid_view(view):
             logging.debug(" view id %s is invalid" % view.buffer_id())
             return Tools.SHOW_DEFAULT_COMPLETIONS

@@ -38,11 +38,4 @@ class TagsFileGenerator(object):
             f.write(line)
         f.close()
 
-if __name__ == '__main__':
-    ttcn_pattern = '^\s*(type)\s+(integer|float|charstring|bitstring|hexstring|octetstring|record|set|union)+\s+([a-zA-Z0-9_]+)'
-    ttcn_gen = TagsFileGenerator('/home/humi/SourceCode/TTCN3_tester/trunk/MME_SGSN_tester/',
-                                 'ttcn')
-    ttcn_gen.output_to_file(ttcn_gen.generate_tags(ttcn_pattern), '.type_tags')
-    #print(ttcn_gen.generate_tags(ttcn_pattern))
-    #print(ttcn_gen.files)
-    
+

@@ -121,13 +121,3 @@ def find(path):
             if file.endswith('.ttcn'):
                 file_list.append(os.path.join(root, file))
     return file_list
-
-if __name__ == '__main__':
-
-    c = CompleteDictGenerator("ttcn3libs\\ttcn\\GtpV2MessagesCore7.ttcn", 
-                              "D:\\userdata\\humi\\My Documents\\work\SourceCode\\TTCN3_tester\\trunk\\MME_SGSN_tester\\",
-                              "CreateSessionRequest")
-    logging.info("start to generate completion dict for file")
-    c.parse_type()
-    print(c.completion_result)
-    #c.output_to_file()

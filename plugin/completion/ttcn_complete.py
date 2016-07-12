@@ -64,12 +64,16 @@ class TtcnCompleter(BaseCompleter):
         self.completed_views.append(view.buffer_id())
 
         if not os.path.exists(os.path.join(view.window().folders()[0], '.type_tags')):
+            logging.info(" the type tags file does not exist, generate new one")
             TtcnCompleter.generate_tags_file(view)
         else:
             mtime = os.path.getatime(os.path.join(view.window().folders()[0], '.type_tags'))
             current_time = time.time()
-            if current_time - mtime > 3600*24*5:
+            #generate tags file ever 5 days
+            if current_time - mtime > 60*60*24*5:
+                logging.info(" the type tags file too old, generate new one")
                 TtcnCompleter.generate_tags_file(view)
+
 
     @staticmethod
     def generate_tags_file(view):
