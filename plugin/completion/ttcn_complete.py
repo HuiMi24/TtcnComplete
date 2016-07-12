@@ -35,7 +35,6 @@ class TtcnCompleter(BaseCompleter):
     valid = False
     file_name = None
     import_modules = []
-    tags_file_content = None
     completed_views = []
     type_tags_file_content = None
 
@@ -47,18 +46,13 @@ class TtcnCompleter(BaseCompleter):
 
         self.file_name = view.file_name()
 
-        tags_path = view.window().folders()[0] + '/' + '.tags'
-        if not (view.window().folders() and os.path.exists(tags_path)):
-            tags_file_content = []
-        else:
-            with open(tags_path, 'r+') as f:
-                self.tags_file_content = f.readlines()
+        #self.import_modules.append()
 
         type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
-        logging.debug("open type tags file %s", type_tags_path)
         if not (view.window().folders() and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
+            logging.debug("open type tags file %s", type_tags_path)
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = f.readlines()
         self.completed_views.append(view.buffer_id())
@@ -142,7 +136,7 @@ class TtcnCompleter(BaseCompleter):
                 for line in flie_body:
                     m = re.match(import_pattern, line)
                     if m:
-                        #logging.debug(" import module: %s", m.group(1))
+                        logging.debug(" import module: %s", m.group(1))
                         import_modules.append(m.group(1))
                 return import_modules
 
@@ -179,6 +173,9 @@ class TtcnCompleter(BaseCompleter):
             logging.debug(" variable_type is null")
             return completions
         import_modules = Parser.get_import_modules(flie_body_lines)
+        import_modules.append(os.path.basename(self.file_name.split('.')[0]))
+        logging.debug(" add self module %s", os.path.basename(self.file_name.split('.')[0]))
+
         tags_moudles = self._get_module_name_for_tags_file(self.type_tags_file_content, variable_type)
         module_name = self._check_type_from_module(import_modules, tags_moudles)
         logging.debug(" module name is %s", module_name)
