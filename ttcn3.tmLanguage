@@ -11,6 +11,70 @@
 	<key>patterns</key>
 	<array>
 		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>fucntion definition</string>
+			<key>match</key>
+			<string>function\s(\w+)\s*\(</string>
+			<key>name</key>
+			<string>entity.name.type.ttcn3</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>testcase definition</string>
+			<key>match</key>
+			<string>testcase\s(\w+)</string>
+			<key>name</key>
+			<string>entity.name.type.ttcn3</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>type definition</string>
+			<key>match</key>
+			<string>type\s(\w+)\s+(\w+)</string>
+			<key>name</key>
+			<string>entity.name.type.ttcn3</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>template definition</string>
+			<key>match</key>
+			<string>^\s*template\s+(\w+)\s+a_(\w+)</string>
+			<key>name</key>
+			<string>entity.name.type.ttcn3</string>
+		</dict>
+		<dict>
 			<key>include</key>
 			<string>#comment</string>
 		</dict>
@@ -140,57 +204,10 @@
 			<string>constant.numeric.ttcn3</string>
 		</dict>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>variable definition</string>
 			<key>match</key>
-			<string>function\s(\w+)\s*\(</string>
+			<string>\b(testcase|function|template|type|altstep|var|const)\b</string>
 			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>variable definition</string>
-			<key>match</key>
-			<string>testcase\s(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>variable.parameter.ttcn3</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>variable definition</string>
-			<key>match</key>
-			<string>var\s(\w+)\s(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
+			<string>support.type.ttcn3</string>
 		</dict>
 	</array>
 	<key>repository</key>
@@ -224,7 +241,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.operator.ttcn3</string>
+							<string>support.type.ttcn3</string>
 						</dict>
 					</dict>
 					<key>match</key>
@@ -245,7 +262,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>(?x) \b(testcase|signature|noblock|exception|altstep|template|type|message| procedure|mixed|var|const|external|function)\b</string>
+					<string>(?x) \b(signature|noblock|exception|message| procedure|mixed|external)\b</string>
 				</dict>
 				<dict>
 					<key>captures</key>

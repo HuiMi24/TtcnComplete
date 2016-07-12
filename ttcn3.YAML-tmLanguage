@@ -7,6 +7,30 @@ fileTypes: [ttcn]
 
 patterns:
 
+- name: entity.name.type.ttcn3
+  match: function\s(\w+)\s*\(
+  captures:
+    '1': {name: entity.name.type.ttcn3}
+  comment: fucntion definition
+
+- name: entity.name.type.ttcn3
+  match: testcase\s(\w+)
+  captures:
+    '1': {name: entity.name.type.ttcn3}
+  comment: testcase definition
+
+- name: entity.name.type.ttcn3
+  match: type\s(\w+)\s+(\w+)
+  captures:
+    '3': {name: entity.name.type.ttcn3}
+  comment: type definition
+
+- name: entity.name.type.ttcn3
+  match: ^\s*template\s+(\w+)\s+a_(\w+)
+  captures:
+    '3': {name: entity.name.type.ttcn3}
+  comment: template definition
+
 - include: '#comment'
 - include: '#builtin_functions_name'
 - include: '#builtin_types'
@@ -58,26 +82,10 @@ patterns:
   match: \b[\d+|infinity|\-infinity]+\b
   comment: numeric
 
-- name: entity.name.type.ttcn3
-  match: function\s(\w+)\s*\(
-  captures:
-    '1': {name: entity.name.type.ttcn3}
-  comment: variable definition
-
-- name: entity.name.type.ttcn3
-  match: testcase\s(\w+)
-  captures:
-    '1': {name: entity.name.type.ttcn3}
-  comment: variable definition
-
-- name: entity.name.type.ttcn3
-  match: var\s(\w+)\s(\w+)
-  captures:
-    '1': {name: entity.name.type.ttcn3}
-    '2': {name: variable.parameter.ttcn3}
-  comment: variable definition
 
 
+- name: support.type.ttcn3
+  match: \b(testcase|function|template|type|altstep|var|const)\b
 
 repository:
 
@@ -122,9 +130,9 @@ repository:
                    in|out|inout|any|all|sender|to|value|modifies|nowait|param|length|recursive|
                    except|optional|ifpresent|language|override|modulepar|group|import|from|ASN\.1)\b
       captures:
-        '1': {name: keyword.operator.ttcn3}
-    - match: (?x) \b(testcase|signature|noblock|exception|altstep|template|type|message|
-                      procedure|mixed|var|const|external|function)\b
+        '1': {name: support.type.ttcn3}
+    - match: (?x) \b(signature|noblock|exception|message|
+                      procedure|mixed|external)\b
       captures:
         '1': {name: entity.name.type.ttcn3}
 
