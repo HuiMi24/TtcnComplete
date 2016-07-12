@@ -11,10 +11,34 @@
 	<key>patterns</key>
 	<array>
 		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.operator.asn</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>type definition</string>
+			<key>match</key>
+			<string>^\s*([\w\-]+)\s*(::=)\s+(\w+)</string>
+		</dict>
+		<dict>
 			<key>match</key>
 			<string>(::=)</string>
 			<key>name</key>
-			<string>keyword.operator.asn.</string>
+			<string>keyword.operator.asn</string>
 		</dict>
 		<dict>
 			<key>comment</key>
@@ -175,7 +199,7 @@ ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|TRUE|FALSE|MIN|MAX|optional|ma
 			<key>match</key>
 			<string>(?x) \b(ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|INTEGER|REAL|STRING|BIT|BOOLEAN|OCTET |NULL|EMBEDDED|PDV|BMPString|IA5String|TeletexString|GeneralString|GraphicString| ISO646String|NumericString|PrintableString|T61String|UniversalString|VideotexString| VisibleString|ANY|DEFINED|OBJECT\s\+IDENTIFIER|UTF8String|CHOICE|SEQUENCE|SET|OF| ENUMERATED|CONSTRAINED|BY|WITH|COMPONENTS|CLASS|SYNTAX)\b[^-]</string>
 			<key>name</key>
-			<string>support.type.asn</string>
+			<string>entity.name.type.asn</string>
 		</dict>
 		<key>comment</key>
 		<dict>

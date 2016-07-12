@@ -7,7 +7,14 @@ uuid: 77590f80-4b89-4efa-a1a5-0ca16869cff9
 
 patterns:
 
-- name: keyword.operator.asn.
+- match: ^\s*([\w\-]+)\s*(::=)\s+(\w+)
+  captures:
+    '1': {name: entity.name.type.ttcn3}
+    '2': {name: keyword.operator.asn}
+    '3': {name: support.type.ttcn3}
+  comment: type definition
+
+- name: keyword.operator.asn
   match: (::=)
 
 - name: string.quoted.single.asn 
@@ -49,7 +56,7 @@ repository:
 
 
   builtin_types:
-    name: support.type.asn
+    name: entity.name.type.asn
     match: (?x) \b(ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|INTEGER|REAL|STRING|BIT|BOOLEAN|OCTET
                    |NULL|EMBEDDED|PDV|BMPString|IA5String|TeletexString|GeneralString|GraphicString|
                    ISO646String|NumericString|PrintableString|T61String|UniversalString|VideotexString|

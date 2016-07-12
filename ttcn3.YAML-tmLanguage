@@ -7,29 +7,64 @@ fileTypes: [ttcn]
 
 patterns:
 
-- name: entity.name.type.ttcn3
-  match: function\s(\w+)\s*\(
+- match: (function)\s(\w+)\s*\(
   captures:
-    '1': {name: entity.name.type.ttcn3}
+    '1': {name: support.type.ttcn3}
+    '2': {name: entity.name.function.ttcn3}
   comment: fucntion definition
 
-- name: entity.name.type.ttcn3
-  match: testcase\s(\w+)
+- match: (testcase)\s(\w+)
   captures:
-    '1': {name: entity.name.type.ttcn3}
+    '1': {name: support.type.ttcn3}
+    '2': {name: entity.name.type.ttcn3}
   comment: testcase definition
 
-- name: entity.name.type.ttcn3
-  match: type\s(\w+)\s+(\w+)
+- match: (type)\s*(record|set)\s*.*of\s*\w+\s+(\w+)
   captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: support.type.ttcn3}
     '3': {name: entity.name.type.ttcn3}
   comment: type definition
 
-- name: entity.name.type.ttcn3
-  match: ^\s*template\s+(\w+)\s+a_(\w+)
+- match: (type|const)\s*(\w+)\s+(\w+)
   captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: support.type.ttcn3}
+    '3': {name: entity.name.type.ttcn3}
+  comment: type definition
+
+- match: ^\s*(template)\s+(\w+)\s+(\w+)
+  captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: support.type.ttcn3}
     '3': {name: entity.name.type.ttcn3}
   comment: template definition
+
+- match: (module)\s+(\w+)\s+
+  captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: entity.name.type.ttcn3}
+
+- match: (modulepar)\s*{?\s*(\w+)\s+(\w+)\s+
+  captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: support.type.ttcn3}
+    '3': {name: entity.name.type.ttcn3}
+
+- match: \s*altstep\s+(\w+)\s*\(
+  captures:
+    '1': {name: entity.name.type.ttcn3}
+
+- match: \s*(timer)\s+(\w+)
+  captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: entity.name.type.ttcn3}
+
+- match: \s*(port)\s+(\w+)\s+(\w+)
+  captures:
+    '1': {name: support.type.ttcn3}
+    '2': {name: support.type.ttcn3}
+    '3': {name: entity.name.type.ttcn3}
 
 - include: '#comment'
 - include: '#builtin_functions_name'
@@ -37,27 +72,7 @@ patterns:
 - include: '#builtin_operator'
 - include: '#builtin_keyword'
 
-- name: module
-  match: (module)\s+(\w+)\s+
-  captures:
-    '1': {name: storage.type.ttcn3}
-    '2': {name: entity.name.type.ttcn3}
 
-
-- name: keyword.control.ttcn3
-  begin: import\s+from\s+(\w+)\s*\{
-  beginCaptures:
-    '1': {name: entity.name.type.ttcn3}
-  end: \}
-  patterns:
-  - include: '#builtin_keyword'
-
-- name: keyword.control.ttcn3
-  match: import\s+from\s+(\w+)\s+
-  captures:
-    '1': {name: entity.name.type.ttcn3}
-  patterns:
-  - include: '#builtin_keyword'
 
 - name: keyword.operator.ttcn3.
   match: (:=|->)
@@ -81,8 +96,6 @@ patterns:
 - name: constant.numeric.ttcn3
   match: \b[\d+|infinity|\-infinity]+\b
   comment: numeric
-
-
 
 - name: support.type.ttcn3
   match: \b(testcase|function|template|type|altstep|var|const)\b

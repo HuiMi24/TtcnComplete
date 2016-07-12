@@ -16,15 +16,148 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.function.ttcn3</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>fucntion definition</string>
 			<key>match</key>
-			<string>function\s(\w+)\s*\(</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
+			<string>(function)\s(\w+)\s*\(</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>testcase definition</string>
+			<key>match</key>
+			<string>(testcase)\s(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>type definition</string>
+			<key>match</key>
+			<string>(type)\s*(record|set)\s*.*of\s*\w+\s+(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>type definition</string>
+			<key>match</key>
+			<string>(type|const)\s*(\w+)\s+(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>template definition</string>
+			<key>match</key>
+			<string>^\s*(template)\s+(\w+)\s+(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(module)\s+(\w+)\s+</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(modulepar)\s*{?\s*(\w+)\s+(\w+)\s+</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -35,44 +168,47 @@
 					<string>entity.name.type.ttcn3</string>
 				</dict>
 			</dict>
-			<key>comment</key>
-			<string>testcase definition</string>
 			<key>match</key>
-			<string>testcase\s(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
+			<string>\s*altstep\s+(\w+)\s*\(</string>
 		</dict>
 		<dict>
 			<key>captures</key>
 			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.ttcn3</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\s*(timer)\s+(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.type.ttcn3</string>
+				</dict>
 				<key>3</key>
 				<dict>
 					<key>name</key>
 					<string>entity.name.type.ttcn3</string>
 				</dict>
 			</dict>
-			<key>comment</key>
-			<string>type definition</string>
 			<key>match</key>
-			<string>type\s(\w+)\s+(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>comment</key>
-			<string>template definition</string>
-			<key>match</key>
-			<string>^\s*template\s+(\w+)\s+a_(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.ttcn3</string>
+			<string>\s*(port)\s+(\w+)\s+(\w+)</string>
 		</dict>
 		<dict>
 			<key>include</key>
@@ -93,69 +229,6 @@
 		<dict>
 			<key>include</key>
 			<string>#builtin_keyword</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>storage.type.ttcn3</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(module)\s+(\w+)\s+</string>
-			<key>name</key>
-			<string>module</string>
-		</dict>
-		<dict>
-			<key>begin</key>
-			<string>import\s+from\s+(\w+)\s*\{</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>end</key>
-			<string>\}</string>
-			<key>name</key>
-			<string>keyword.control.ttcn3</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#builtin_keyword</string>
-				</dict>
-			</array>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>import\s+from\s+(\w+)\s+</string>
-			<key>name</key>
-			<string>keyword.control.ttcn3</string>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>include</key>
-					<string>#builtin_keyword</string>
-				</dict>
-			</array>
 		</dict>
 		<dict>
 			<key>match</key>
