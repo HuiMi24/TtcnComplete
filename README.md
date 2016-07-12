@@ -2,7 +2,7 @@
 
 Sublime Text 3 plugin that offers auto-completion, TTCN-3 and ASN syntax highlight for TTCN-3
 
-![Example](demo.gif)
+![Example](demo_external.gif)
 
 This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-3 for Sublime Text 3.
 
