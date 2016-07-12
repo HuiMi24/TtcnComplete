@@ -11,9 +11,11 @@ import logging
 import os
 import json
 import imp
+import time
 from ..tools import Tools
 from .completions_dict_generator import CompleteDictGenerator
 from .base_complete import BaseCompleter
+from ..tags_file_generator import TagsFileGenerator
 from . import base_complete
 
 imp.reload(base_complete)
@@ -60,6 +62,22 @@ class TtcnCompleter(BaseCompleter):
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = f.readlines()
         self.completed_views.append(view.buffer_id())
+
+        if not os.path.exists(os.path.join(view.window().folders()[0], '.type_tags')):
+            TtcnCompleter.generate_tags_file(view)
+        else:
+            mtime = os.path.getatime(os.path.join(view.window().folders()[0], '.type_tags'))
+            current_time = time.time()
+            if current_time - mtime > 3600*24*5:
+                TtcnCompleter.generate_tags_file(view)
+
+    @staticmethod
+    def generate_tags_file(view):
+        ttcn_pattern = '^\s*(type)\s+(integer|float|charstring|bitstring|hexstring|octetstring|record|set|union)+\s+([a-zA-Z0-9_]+)'
+        ttcn_gen = TagsFileGenerator(view.window().folders()[0],
+                                     'ttcn')
+        tags = ttcn_gen.generate_tags(ttcn_pattern)
+        ttcn_gen.output_to_file(tags, '.type_tags')
 
     def exist_for_view(self, view_id):
         if view_id in self.completed_views:
@@ -161,6 +179,7 @@ class TtcnCompleter(BaseCompleter):
         module_name = self._check_type_from_module(import_modules, tags_moudles)
         logging.debug(" module name is %s", module_name)
         if module_name:
+            logging.debug(" open folder is %s ", view.window().folders()[0])
             completions = Parser._get_completions_from_file(view.window().folders()[0],
                                                         variable_type,
                                                         variable_name,

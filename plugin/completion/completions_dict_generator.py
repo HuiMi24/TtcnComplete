@@ -22,7 +22,8 @@ class CompleteDictGenerator(BaseCompleter):
         self.file_name = file_name
         self.root_path = root_path
         self.type_name = type_name
-        with open(os.path.join(root_path, file_name), 'r') as f:
+        logging.debug(" open type tags file %s", file_name)
+        with open(file_name, 'r') as f:
             self.file_context = f.readlines()
 
         self.completion_result = dict(modulename=file_name)
@@ -36,7 +37,7 @@ class CompleteDictGenerator(BaseCompleter):
 
     def parse_type(self):
         if self.type_name:
-            type_pattern = '^\s*type\s+(record|union|set)\s+(%s)' % self.type_name
+            type_pattern = '^\s*type\s+(record|union|set)\s+(%s)[\s{]+' % self.type_name
         else:
             type_pattern = '^\s*type\s+(record|union|set)\s+(\w+)'
         list_pattern = '^\s*type\s+(record|set)\s+(of|length)'

@@ -6,7 +6,7 @@ class BaseCompleter(object):
 
     @staticmethod
     def _get_module_name_for_tags_file(tags_file_context, type_name):
-        type_pattern = '^\s*%s\s+([\w/\.]+)' % type_name
+        type_pattern = '^\s*%s\s+([\w/\.:\\\\ ]+)' % type_name
         logging.debug("_get_module_name_for_tags_file %s", type_pattern )
         res = []
         for line in tags_file_context:
