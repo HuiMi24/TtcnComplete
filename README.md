@@ -16,7 +16,9 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
 ## Settings auto completion trigger ##
 
 Copy this to Setting User
+
 `Preferences->Setting-User`
+
   ```json
 	"auto_complete_triggers":
 	[
