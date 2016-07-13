@@ -46,15 +46,6 @@ class TtcnCompleter(BaseCompleter):
 
         self.file_name = view.file_name()
 
-        #self.import_modules.append()
-
-        type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
-        if not (view.window().folders() and os.path.exists(type_tags_path)):
-            type_tags_file_content = []
-        else:
-            logging.debug("open type tags file %s", type_tags_path)
-            with open(type_tags_path, 'r+') as f:
-                self.type_tags_file_content = f.readlines()
         self.completed_views.append(view.buffer_id())
 
         if not os.path.exists(os.path.join(view.window().folders()[0], '.type_tags')):
@@ -68,6 +59,13 @@ class TtcnCompleter(BaseCompleter):
                 logging.info(" the type tags file too old, generate new one")
                 TtcnCompleter.generate_tags_file(view)
 
+        type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
+        if not (view.window().folders() and os.path.exists(type_tags_path)):
+            type_tags_file_content = []
+        else:
+            logging.debug("open type tags file %s", type_tags_path)
+            with open(type_tags_path, 'r+') as f:
+                self.type_tags_file_content = f.readlines()
 
     @staticmethod
     def generate_tags_file(view):
