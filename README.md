@@ -28,3 +28,7 @@ Copy this to Setting User
 		}
 	]
   ```
+
+#Notes:
+1. It only support file end with ".ttcn"
+2. The module name must be same as the file name
