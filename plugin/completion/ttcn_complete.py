@@ -37,6 +37,7 @@ class TtcnCompleter(BaseCompleter):
     import_modules = []
     completed_views = []
     type_tags_file_content = None
+    open_folder = None
 
     def init(self, view):
         """Initialize the completer
@@ -45,22 +46,23 @@ class TtcnCompleter(BaseCompleter):
             return
 
         self.file_name = view.file_name()
+        self.open_folder = view.window().folders()[0]
 
         self.completed_views.append(view.buffer_id())
 
-        if not os.path.exists(os.path.join(view.window().folders()[0], '.type_tags')):
+        if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
             logging.info(" the type tags file does not exist, generate new one")
-            TtcnCompleter.generate_tags_file(view)
+            TtcnCompleter.generate_tags_file(view, self.open_folder)
         else:
-            mtime = os.path.getatime(os.path.join(view.window().folders()[0], '.type_tags'))
+            mtime = os.path.getatime(os.path.join(self.open_folder, '.type_tags'))
             current_time = time.time()
             #generate tags file ever 5 days
             if current_time - mtime > 60*60*24*5:
                 logging.info(" the type tags file too old, generate new one")
-                TtcnCompleter.generate_tags_file(view)
+                TtcnCompleter.generate_tags_file(view, self.open_folder)
 
-        type_tags_path = view.window().folders()[0] + '/' + '.type_tags'
-        if not (view.window().folders() and os.path.exists(type_tags_path)):
+        type_tags_path = self.open_folder + '/' + '.type_tags'
+        if not (self.open_folder and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
             logging.debug("open type tags file %s", type_tags_path)
@@ -68,9 +70,9 @@ class TtcnCompleter(BaseCompleter):
                 self.type_tags_file_content = f.readlines()
 
     @staticmethod
-    def generate_tags_file(view):
-        ttcn_pattern = '^\s*(type)\s+(integer|float|charstring|bitstring|hexstring|octetstring|record|set|union)+\s+([a-zA-Z0-9_]+)'
-        ttcn_gen = TagsFileGenerator(view.window().folders()[0],
+    def generate_tags_file(view, root_path):
+        ttcn_pattern = '^\s*(type)\s+(integer|float|charstring|bitstring|hexstring|octetstring|record|set|union|enumerated)+\s+([a-zA-Z0-9_]+)'
+        ttcn_gen = TagsFileGenerator(root_path,
                                      'ttcn')
         tags = ttcn_gen.generate_tags(ttcn_pattern)
         ttcn_gen.output_to_file(tags, '.type_tags')
@@ -178,8 +180,8 @@ class TtcnCompleter(BaseCompleter):
         module_name = self._check_type_from_module(import_modules, tags_moudles)
         logging.debug(" module name is %s", module_name)
         if module_name:
-            logging.debug(" open folder is %s ", view.window().folders()[0])
-            completions = Parser._get_completions_from_file(view.window().folders()[0],
+            logging.debug(" open folder is %s ", self.open_folder)
+            completions = Parser._get_completions_from_file(self.open_folder,
                                                         variable_type,
                                                         variable_name,
                                                         module_name)

@@ -25,7 +25,7 @@ def plugin_loaded():
 
     settings = plugin_settings.Settings()
     if settings.debug_mode:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
     completer = ttcn_complete.TtcnCompleter()
@@ -48,7 +48,7 @@ class TtcnComplete(sublime_plugin.EventListener):
             if completer.exist_for_view(view.buffer_id()):
                 logging.debug(" view %s, already has a completer", view.buffer_id())
                 return
-            logging.debug(" init completer for view id %s" % view.buffer_id())
+            logging.info(" init completer for view id %s" % view.buffer_id())
             completer.init(view)
 
     
@@ -83,11 +83,7 @@ class TtcnComplete(sublime_plugin.EventListener):
         completion_thread.deamon = True
         completion_thread.start()
 
-        #if settings.hide_default_completions:
-        #    logging.debug(" hide default completions")
-        #    return Tools.HIDE_DEFAULT_COMPLETIONS
         logging.debug(" show default completions last")
         return Tools.HIDE_DEFAULT_COMPLETIONS
-        #return Tools.SHOW_DEFAULT_COMPLETIONS
 
 
