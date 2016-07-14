@@ -31,7 +31,7 @@ class Tools(object):
     valid_extensions = [".ttcn"]
     valid_syntax = ["ttcn3"]
 
-    SHOW_DEFAULT_COMPLETIONS = None
+    SHOW_DEFAULT_COMPLETIONS = []
     HIDE_DEFAULT_COMPLETIONS = ([], sublime.INHIBIT_WORD_COMPLETIONS |
                                 sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 

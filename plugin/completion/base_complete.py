@@ -4,6 +4,9 @@ import logging
 
 class BaseCompleter(object):
 
+    ttcn_base_type = ["integer","float","charstring","bitstring","hexstring","octetstring","record","set","union","enumerated"]
+    simple_types = ["boolean","char","float","integer","enumerated","charstring","octetstring","hexstring","bitstring"]
+
     @staticmethod
     def _get_module_name_for_tags_file(tags_file_context, type_name):
         type_pattern = '^\s*%s\s+([\w/\.:\\\\ ]+)' % type_name

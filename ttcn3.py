@@ -32,7 +32,6 @@ def plugin_loaded():
 
 class TtcnComplete(sublime_plugin.EventListener):
 
-
     @staticmethod
     def on_activated_async(view):
         """Called upon activating a view. Execution in a worker thread.
@@ -50,8 +49,22 @@ class TtcnComplete(sublime_plugin.EventListener):
                 return
             logging.info(" init completer for view id %s" % view.buffer_id())
             completer.init(view)
+            logging.info(" init completer for view id %s doneeee" % view.buffer_id())
 
-    
+    @staticmethod
+    def on_close(view):
+        """Called on closing the view.
+
+        Args:
+            view (sublime.View): current view
+
+        """
+        if Tools.is_valid_view(view):
+            logging.debug(" closing view %s", view.buffer_id())
+            if not completer:
+                return
+            completer.remove(view.buffer_id())
+
     def on_query_completions(self, view, prefix, locations):
 
         logging.debug("on_query_completions view id is %s " % view.buffer_id())

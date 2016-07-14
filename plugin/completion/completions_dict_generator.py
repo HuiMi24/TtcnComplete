@@ -36,11 +36,10 @@ class CompleteDictGenerator(BaseCompleter):
         self.find_type = False
 
     def parse_type(self):
-        simple_types = ["boolean","char","float","integer","enumerated","charstring","octetstring","hexstring","bitstring"]
         if self.type_name:
-            type_pattern = '^\s*type\s+(record|union|set|boolean|char|float|integer|enumerated|charstring|octetstring|hexstring|bitstring)\s+(%s)[\s{;]+' % self.type_name
+            type_pattern = '^\s*type\s+(%s)\s+(%s)[\s{;(]+' % ('|'.join(self.ttcn_base_type), self.type_name)
         else:
-            type_pattern = '^\s*type\s+(record|union|set|boolean|char|float|integer|enumerated|charstring|octetstring|hexstring|bitstring)\s+(\w+)'
+            type_pattern = '^\s*type\s+(%s)\s+(\w+)' % '|'.join(self.ttcn_base_type)
         list_pattern = '^\s*type\s+(record|set)\s+(of|length)'
         i = 0
         while i < len(self.file_context):
@@ -53,7 +52,7 @@ class CompleteDictGenerator(BaseCompleter):
                 parent_type_name = m.group(2)
                 logging.debug("parent type name is %s", parent_type_name)
                 logging.info(" get sublist for type %s", parent_type_name)
-                if m.group(1) in simple_types:
+                if m.group(1) in self.simple_types:
                     logging.debug(" it's a simple type")
                     tags_moudles = self._get_module_name_for_tags_file(self.tags_file_context, parent_type_name)
                     module = self._check_type_from_module(self.import_modules, 

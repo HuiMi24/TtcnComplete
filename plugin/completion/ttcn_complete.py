@@ -34,10 +34,12 @@ class TtcnCompleter(BaseCompleter):
     completions = []
     valid = False
     file_name = None
+    flie_body = None
     import_modules = []
     completed_views = []
     type_tags_file_content = None
     open_folder = None
+    import_item = []
 
     def init(self, view):
         """Initialize the completer
@@ -47,12 +49,14 @@ class TtcnCompleter(BaseCompleter):
 
         self.file_name = view.file_name()
         self.open_folder = view.window().folders()[0]
-
         self.completed_views.append(view.buffer_id())
+
+        self.flie_body = TtcnCompleter._get_current_file_body(view)
+        self.import_modules =  TtcnCompleter._get_import_modules(self.file_name, self.flie_body)
 
         if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
             logging.info(" the type tags file does not exist, generate new one")
-            TtcnCompleter.generate_tags_file(view, self.open_folder)
+            TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
         else:
             mtime = os.path.getatime(os.path.join(self.open_folder, '.type_tags'))
             current_time = time.time()
@@ -61,17 +65,57 @@ class TtcnCompleter(BaseCompleter):
                 logging.info(" the type tags file too old, generate new one")
                 TtcnCompleter.generate_tags_file(view, self.open_folder)
 
-        type_tags_path = self.open_folder + '/' + '.type_tags'
+        type_tags_path = os.path.join(self.open_folder, '.type_tags')
         if not (self.open_folder and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
-            logging.debug("open type tags file %s", type_tags_path)
+            logging.debug(" pen type tags file %s", type_tags_path)
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = f.readlines()
 
+    def remove(self, view_id):
+        """remove compile flags for view
+
+        Args:
+            view_id (int): current view id
+        """
+        if view_id in self.completed_views:
+            self.completed_views = []
+
     @staticmethod
-    def generate_tags_file(view, root_path):
-        ttcn_pattern = '^\s*(type)\s+(integer|float|charstring|bitstring|hexstring|octetstring|record|set|union|enumerated)+\s+([a-zA-Z0-9_]+)'
+    def _get_current_file_body(view):
+        flie_body = view.substr(sublime.Region(0, view.size()))
+        return flie_body
+
+    @staticmethod
+    def _get_import_modules(file_name, flie_body):
+        flie_body = flie_body.split('\n')
+        import_pattern = re.compile('\s*import\s*from\s*(\w+)')
+        import_modules = []
+        for line in flie_body:
+            m = re.match(import_pattern, line)
+            if m:
+                #logging.debug(" import module: %s", m.group(1))
+                import_modules.append(m.group(1))
+        import_modules.append(os.path.basename(file_name.split('.')[0]))
+        return import_modules
+
+    #not impletment yet
+    def get_import_item(self, view):
+        flie_body_lines = self.flie_body.split('\n')
+
+        import_pattern = '\s*import\s*from\s*(\w+)\s+all'
+        import_modules = []
+        for line in flie_body_lines:
+            m = re.match(import_pattern, line)
+            if m:
+                logging.debug(" import module: %s", m.group(1))
+                import_modules.append(m.group(1))
+        self.import_item.append()
+
+    @staticmethod
+    def generate_tags_file(view, root_path, ttcn_base_type):
+        ttcn_pattern = '^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(ttcn_base_type)
         ttcn_gen = TagsFileGenerator(root_path,
                                      'ttcn')
         tags = ttcn_gen.generate_tags(ttcn_pattern)
@@ -83,10 +127,9 @@ class TtcnCompleter(BaseCompleter):
         return False
 
     def complete(self, view, cursor_pos):
-        flie_body = view.substr(sublime.Region(0, view.size()))
         (row, col) = view.rowcol(cursor_pos)
 
-        self.completions = TtcnCompleter._parse_completions(self, view, flie_body, row, col)
+        self.completions = TtcnCompleter._parse_completions(self, view, row, col)
         self.async_completions_ready = True
         TtcnCompleter._reload_completions(view)
 
@@ -102,16 +145,18 @@ class TtcnCompleter(BaseCompleter):
         logging.debug(" reload completion tooltip")
         view.run_command('hide_auto_complete')
         view.run_command('auto_complete', {
-            'disable_auto_insert': True,
-            'api_completions_only': True,
-            'next_competion_if_showing': True, })
+                            'disable_auto_insert': True,
+                            'api_completions_only': True,
+                            'next_competion_if_showing': True, })
 
-    def _parse_completions(self, view, flie_body, row, col):
+    def _parse_completions(self, view, row, col):
+
         class Parser:
             @staticmethod
             def get_variable_name(flie_body, row, col):
                 cur_line = flie_body[row].strip()
-                variable_name_pattern = '([a-zA-Z0-9_]*)\.'
+                logging.debug(" in get_variable_name current line is %s", cur_line)
+                variable_name_pattern = '(\w+)\.'
                 if str:
                     m = re.findall(variable_name_pattern, cur_line)
                     if m:
@@ -130,25 +175,13 @@ class TtcnCompleter(BaseCompleter):
                 return
 
             @staticmethod
-            def get_import_modules(flie_body):
-                import_pattern = re.compile('\s*import\s*from\s*(\w+)')
-                import_modules = []
-                for line in flie_body:
-                    m = re.match(import_pattern, line)
-                    if m:
-                        logging.debug(" import module: %s", m.group(1))
-                        import_modules.append(m.group(1))
-                return import_modules
-
-            @staticmethod
             def _get_completions_from_file(root_path, variable_type, variables,module_name):
                 for i in range(len(variables)):
                     variable = variables[i]
                     if i > 0:
                         temp = [ [sub.get('type_name'), sub.get('module_name')] \
                             for sub in comp_dict.get(variable_type) if sub.get('variable_name') == variable]
-                        variable_type = temp[0][0]
-                        module_name = temp[0][1]
+                        variable_type, module_name = temp[0][0], temp[0][1]
                         logging.debug("variable type is %s", variable_type)
                         logging.debug("module name is %s", module_name)
                     if module_name:
@@ -161,28 +194,31 @@ class TtcnCompleter(BaseCompleter):
                                      sub.get('variable_name')]for sub in comp_dict.get(variable_type)]
                 return completions
 
-
         completions = []
-        flie_body_lines = flie_body.split('\n')
+        #update file body
+        self.flie_body = TtcnCompleter._get_current_file_body(view)
+        flie_body_lines = self.flie_body.split('\n')
+
         variable_name = Parser.get_variable_name(flie_body_lines, row, col)
+        logging.debug(" variables is %s", variable_name)
+
         if len(variable_name) == 0:
             logging.debug(" variable_name is null")
             return completions
+
         variable_type = Parser.get_variable_type(flie_body_lines, row, col, variable_name[0])
         if not variable_type:
             logging.debug(" variable_type is null")
             return completions
-        import_modules = Parser.get_import_modules(flie_body_lines)
-        import_modules.append(os.path.basename(self.file_name.split('.')[0]))
-        logging.debug(" add self module %s", os.path.basename(self.file_name.split('.')[0]))
 
         tags_moudles = self._get_module_name_for_tags_file(self.type_tags_file_content, variable_type)
-        module_name = self._check_type_from_module(import_modules, tags_moudles)
+        module_name = self._check_type_from_module(self.import_modules, tags_moudles)
+
         logging.debug(" module name is %s", module_name)
         if module_name:
             logging.debug(" open folder is %s ", self.open_folder)
             completions = Parser._get_completions_from_file(self.open_folder,
-                                                        variable_type,
-                                                        variable_name,
-                                                        module_name)
+                                                            variable_type,
+                                                            variable_name,
+                                                            module_name)
         return completions
