@@ -82,11 +82,11 @@ patterns:
   comment: bitstring
 
 - name: string.quoted.single.ttcn3
-  match: \'([a-eA-E0-9][a-eA-E0-9])*\'O
+  match: \'([a-fA-F0-9][a-fA-F0-9])*\'O
   comment: octetstring
 
 - name: string.quoted.single.ttcn3
-  match: \'[a-eA-E0-9]*\'H
+  match: \'[a-fA-F0-9]*\'H
   comment: hexstring
 
 - name: string.quoted.double.ttcn3

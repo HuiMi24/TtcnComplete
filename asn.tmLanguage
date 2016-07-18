@@ -52,7 +52,7 @@
 			<key>comment</key>
 			<string>octetstring</string>
 			<key>match</key>
-			<string>\'([a-eA-E0-9][a-eA-E0-9])*\'O</string>
+			<string>\'([a-fA-F0-9][a-fA-F0-9])*\'O</string>
 			<key>name</key>
 			<string>string.quoted.single.asn</string>
 		</dict>
@@ -60,7 +60,7 @@
 			<key>comment</key>
 			<string>hexstring</string>
 			<key>match</key>
-			<string>\'[a-eA-E0-9]*\'H</string>
+			<string>\'[a-fA-F0-9]*\'H</string>
 			<key>name</key>
 			<string>string.quoted.single.asn</string>
 		</dict>
