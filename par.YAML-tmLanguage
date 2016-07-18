@@ -1,0 +1,45 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: PAR
+scopeName: source.par
+fileTypes: [par]
+uuid: 77590f80-4b89-4efa-a1a5-0ca16869cff9
+
+patterns:
+
+- name: string.quoted.single.par 
+  match: \'[01]*\'B
+  comment: bitstring
+
+- name: string.quoted.single.par
+  match: \'([a-fA-F0-9][a-fA-F0-9])*\'O
+  comment: octetstring
+
+- name: string.quoted.single.par
+  match: \'[a-fA-F0-9]*\'H
+  comment: hexstring
+
+- name: string.quoted.double.par
+  match: \".*\"
+  comment: string
+
+- name: constant.numeric.par
+  match: \b[\d+]+\b
+  comment: numeric
+
+- match: (\w+)\.(\w+)
+  captures:
+    '1': {name: support.type.par}
+    '2': {name: support.variable.par}
+  comment: numeric
+
+- include: '#comment'
+
+repository:
+  comment:
+    patterns:
+    - name: comment.line.double-slash.par
+      match: \#.*
+
+
+...
