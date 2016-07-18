@@ -49,7 +49,7 @@ class TtcnComplete(sublime_plugin.EventListener):
                 return
             logging.info(" init completer for view id %s" % view.buffer_id())
             completer.init(view)
-            logging.info(" init completer for view id %s doneeee" % view.buffer_id())
+            logging.info(" init completer for view id %s done" % view.buffer_id())
 
     @staticmethod
     def on_post_save_async(view):
