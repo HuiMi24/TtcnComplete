@@ -1,6 +1,7 @@
 import re
 import os
 import logging
+import json
 
 class TagsFileGenerator(object):
     """docstring for TagsFileGenerator"""
@@ -18,7 +19,7 @@ class TagsFileGenerator(object):
         return
 
     def generate_tags(self, pattern):
-        tags = []
+        tags = dict()
         for file in self.files:
             if os.path.exists(file):
                 with open(file, encoding="ISO-8859-1") as f:
@@ -27,14 +28,13 @@ class TagsFileGenerator(object):
                     m = re.match(pattern, line)
                     if m:
                         logging.debug(" generate tags for file %s", file)
-                        res = '{:s}\t{:s}\t/^    {:s}$/;"   r\n'.format(m.group(3), str(file), m.group())
-                        tags.append(res)
+                        if tags.get(m.group(3)) is None:
+                            tags[m.group(3)] = []
+                        tags[m.group(3)].append(str(file))
         return tags
 
     def output_to_file(self, tags, tags_file_name):
-        f = open(os.path.join(self.root_path, tags_file_name), 'w+')
-        for line in tags:
-            f.write(line)
-        f.close()
+        with open(os.path.join(self.root_path, tags_file_name), 'w+') as f:
+            json.dump(tags, f)
 
 

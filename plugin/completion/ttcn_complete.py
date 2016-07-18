@@ -69,9 +69,13 @@ class TtcnCompleter(BaseCompleter):
         if not (self.open_folder and os.path.exists(type_tags_path)):
             type_tags_file_content = []
         else:
-            logging.debug(" pen type tags file %s", type_tags_path)
+            logging.debug(" open type tags file %s", type_tags_path)
             with open(type_tags_path, 'r+') as f:
-                self.type_tags_file_content = f.readlines()
+                self.type_tags_file_content = json.load(f)
+
+        Tools.SHOW_DEFAULT_COMPLETIONS = [ ['abcadad']]
+        #TtcnCompleter._get_import_item(self, view)
+        
 
     def update(self, view):
         """update build for current view
@@ -96,11 +100,16 @@ class TtcnCompleter(BaseCompleter):
         return flie_body
 
     #not impletment yet
-    def get_import_item(self, view):
+    def _get_import_item(self, view):
         flie_body_lines = self.flie_body.split('\n')
+        file_name = []
+        for module_name in self.import_modules:
+            file_name.append(self._get_module_name_for_tags_file(self.type_tags_file_content, 
+                                                                 module_name = module_name))
 
+        logging.debug(file_name)
 
-        self.import_item.append()
+        #self.import_item.append()
 
     @staticmethod
     def generate_tags_file(view, root_path, ttcn_base_type):
@@ -119,12 +128,12 @@ class TtcnCompleter(BaseCompleter):
         (row, col) = view.rowcol(cursor_pos)
 
         start = time.time()
-        logging.debug(" started code complete for view %s", view.buffer_id())
+        logging.info(" started code complete for view %s", view.buffer_id())
         self.completions = TtcnCompleter._parse_completions(self, view, row, col)
         self.async_completions_ready = True
         TtcnCompleter._reload_completions(view)
         end = time.time()
-        logging.debug(" code complete done in %s seconds", end - start)
+        logging.info(" code complete done in %s seconds", end - start)
 
     @staticmethod
     def _reload_completions(view):
@@ -183,7 +192,7 @@ class TtcnCompleter(BaseCompleter):
                                                   variable_type)
                         c.parse_type()
                         comp_dict = c.completion_result
-                    completions = [ [sub.get('variable_name') + '\t    ' + sub.get('type_name'),\
+                    completions = [ [sub.get('variable_name') + '\t    ' + sub.get('type_name') + ' ',\
                                      sub.get('variable_name')]for sub in comp_dict.get(variable_type)]
                 return completions
 

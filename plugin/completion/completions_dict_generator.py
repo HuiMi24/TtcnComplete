@@ -30,7 +30,7 @@ class CompleteDictGenerator(BaseCompleter):
         self.import_modules = BaseCompleter._get_import_modules(self.file_name, self.file_context)
 
         with open(os.path.join(root_path, '.type_tags'), 'r+') as fo:
-            self.tags_file_context = fo.readlines()
+            self.tags_file_context = json.load(fo)
 
         self.find_type = False
 
