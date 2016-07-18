@@ -52,6 +52,21 @@ class TtcnComplete(sublime_plugin.EventListener):
             logging.info(" init completer for view id %s doneeee" % view.buffer_id())
 
     @staticmethod
+    def on_post_save_async(view):
+        """On save. Executed in a worker thread.
+
+        Args:
+            view (sublime.View): current view
+
+        """
+        if Tools.is_valid_view(view):
+            log.debug(" saving view: %s", view.buffer_id())
+            if not completer:
+                return
+            completer.update(view)
+
+
+    @staticmethod
     def on_close(view):
         """Called on closing the view.
 

@@ -52,7 +52,7 @@ class TtcnCompleter(BaseCompleter):
         self.completed_views.append(view.buffer_id())
 
         self.flie_body = TtcnCompleter._get_current_file_body(view)
-        self.import_modules =  TtcnCompleter._get_import_modules(self.file_name, self.flie_body)
+        self.import_modules =  BaseCompleter._get_import_modules(self.file_name, self.flie_body.split('\n'))
 
         if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
             logging.info(" the type tags file does not exist, generate new one")
@@ -63,7 +63,7 @@ class TtcnCompleter(BaseCompleter):
             #generate tags file ever 5 days
             if current_time - mtime > 60*60*24*5:
                 logging.info(" the type tags file too old, generate new one")
-                TtcnCompleter.generate_tags_file(view, self.open_folder)
+                TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
 
         type_tags_path = os.path.join(self.open_folder, '.type_tags')
         if not (self.open_folder and os.path.exists(type_tags_path)):
@@ -72,6 +72,14 @@ class TtcnCompleter(BaseCompleter):
             logging.debug(" pen type tags file %s", type_tags_path)
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = f.readlines()
+
+    def update(self, view):
+        """update build for current view
+
+        Args:
+            view (sublime.View): this view
+        """
+        pass
 
     def remove(self, view_id):
         """remove compile flags for view
@@ -87,30 +95,11 @@ class TtcnCompleter(BaseCompleter):
         flie_body = view.substr(sublime.Region(0, view.size()))
         return flie_body
 
-    @staticmethod
-    def _get_import_modules(file_name, flie_body):
-        flie_body = flie_body.split('\n')
-        import_pattern = re.compile('\s*import\s*from\s*(\w+)')
-        import_modules = []
-        for line in flie_body:
-            m = re.match(import_pattern, line)
-            if m:
-                #logging.debug(" import module: %s", m.group(1))
-                import_modules.append(m.group(1))
-        import_modules.append(os.path.basename(file_name.split('.')[0]))
-        return import_modules
-
     #not impletment yet
     def get_import_item(self, view):
         flie_body_lines = self.flie_body.split('\n')
 
-        import_pattern = '\s*import\s*from\s*(\w+)\s+all'
-        import_modules = []
-        for line in flie_body_lines:
-            m = re.match(import_pattern, line)
-            if m:
-                logging.debug(" import module: %s", m.group(1))
-                import_modules.append(m.group(1))
+
         self.import_item.append()
 
     @staticmethod

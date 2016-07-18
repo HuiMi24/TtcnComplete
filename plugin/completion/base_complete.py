@@ -27,3 +27,16 @@ class BaseCompleter(object):
                 if import_module == os.path.basename(tags_module).split('.')[0]:
                     return tags_module
         return
+
+    @staticmethod
+    def _get_import_modules(file_name, flie_body):
+        import_pattern = re.compile('\s*import\s*from\s*(\w+)')
+        import_modules = []
+        for line in flie_body:
+            m = re.match(import_pattern, line)
+            if m:
+                #logging.debug(" import module: %s", m.group(1))
+                import_modules.append(m.group(1))
+        #the last item is current module
+        import_modules.append(os.path.basename(file_name.split('.')[0]))
+        return import_modules

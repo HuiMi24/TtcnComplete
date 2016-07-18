@@ -27,8 +27,7 @@ class CompleteDictGenerator(BaseCompleter):
             self.file_context = f.readlines()
 
         self.completion_result = dict(modulename=file_name)
-        self.import_modules = CompleteDictGenerator._get_import_module(self.file_context)
-        self.import_modules.append(os.path.basename(self.file_name).split('.')[0])
+        self.import_modules = BaseCompleter._get_import_modules(self.file_name, self.file_context)
 
         with open(os.path.join(root_path, '.type_tags'), 'r+') as fo:
             self.tags_file_context = fo.readlines()
@@ -56,12 +55,12 @@ class CompleteDictGenerator(BaseCompleter):
                     logging.debug(" it's a simple type")
                     tags_moudles = self._get_module_name_for_tags_file(self.tags_file_context, parent_type_name)
                     module = self._check_type_from_module(self.import_modules, 
-                                                         tags_moudles)
+                                                          tags_moudles)
                     logging.debug(" module name for type %s is %s", parent_type_name, module)
                     self.completion_result[parent_type_name] = [dict(module_name= module, 
-                                            type_name=m.group(1), 
-                                            variable_name = m.group(2),
-                                            simple_type=True)]
+                                                                type_name=m.group(1), 
+                                                                variable_name = m.group(2),
+                                                                simple_type=True)]
                     i += 1
                     continue
                 subtype_pattern = re.compile('^\s*({)?\s+(\w+)\s+(\w+)')
@@ -83,7 +82,7 @@ class CompleteDictGenerator(BaseCompleter):
                                                          tags_moudles)
                         logging.debug(" module name for type %s is %s", sub_type_name, module)
 
-                        subtype_list.append( dict(module_name=module, 
+                        subtype_list.append(dict(module_name=module, 
                                             type_name=sub_type_name, 
                                             variable_name = sub_variable_name,
                                             simple_type=False))
@@ -104,17 +103,6 @@ class CompleteDictGenerator(BaseCompleter):
         for root, dirs, files in os.walk(path):
             if name in files:
                 return os.path.join(root, name)
-
-    @staticmethod
-    def _get_import_module(file_context):
-        import_pattern = re.compile('\s*import\s*from\s*(\w+)')
-        import_modules = []
-        for line in file_context:
-            m = re.match(import_pattern, line)
-            if m:
-                logging.debug(" import module: %s", m.group(1))
-                import_modules.append(m.group(1))
-        return import_modules
 
     def output_to_file(self):
         if self.find_type:
