@@ -58,7 +58,7 @@ class TtcnCompleter(BaseCompleter):
             logging.info(" the type tags file does not exist, generate new one")
             TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
         else:
-            mtime = os.path.getatime(os.path.join(self.open_folder, '.type_tags'))
+            mtime = os.path.getmtime(os.path.join(self.open_folder, '.type_tags'))
             current_time = time.time()
             #generate tags file ever 5 days
             if current_time - mtime > 60*60*24*5:
@@ -118,9 +118,13 @@ class TtcnCompleter(BaseCompleter):
     def complete(self, view, cursor_pos):
         (row, col) = view.rowcol(cursor_pos)
 
+        start = time.time()
+        logging.debug(" started code complete for view %s", view.buffer_id())
         self.completions = TtcnCompleter._parse_completions(self, view, row, col)
         self.async_completions_ready = True
         TtcnCompleter._reload_completions(view)
+        end = time.time()
+        logging.debug(" code complete done in %s seconds", end - start)
 
     @staticmethod
     def _reload_completions(view):
@@ -155,7 +159,7 @@ class TtcnCompleter(BaseCompleter):
 
             @staticmethod
             def get_variable_type(flie_body, row, col, variable_name):
-                variable_type_pattern = '^\s*(var)?\s*(template)?\s*(\w+)\s*'+ variable_name
+                variable_type_pattern = '^\s*(var)?\s*(template)?\s*(\w+)\s*%s[\s{;(]+' % variable_name
                 for line in flie_body[row::-1]:
                     m = re.match(variable_type_pattern, line)
                     if m:

@@ -20,14 +20,13 @@ class TagsFileGenerator(object):
     def generate_tags(self, pattern):
         tags = []
         for file in self.files:
-            logging.debug(" generate_tags open file %s", file)
             if os.path.exists(file):
                 with open(file, encoding="ISO-8859-1") as f:
                     file_content =  f.readlines()
                 for line in file_content:
                     m = re.match(pattern, line)
                     if m:
-                        #logging.debug(" generate tags for file %s", file)
+                        logging.debug(" generate tags for file %s", file)
                         res = '{:s}\t{:s}\t/^    {:s}$/;"   r\n'.format(m.group(3), str(file), m.group())
                         tags.append(res)
         return tags
