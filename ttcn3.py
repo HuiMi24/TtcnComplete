@@ -60,7 +60,7 @@ class TtcnComplete(sublime_plugin.EventListener):
 
         """
         if Tools.is_valid_view(view):
-            log.debug(" saving view: %s", view.buffer_id())
+            logging.debug(" saving view: %s", view.buffer_id())
             if not completer:
                 return
             completer.update(view)
@@ -80,7 +80,8 @@ class TtcnComplete(sublime_plugin.EventListener):
                 return
             completer.remove(view.buffer_id())
 
-    def on_query_completions(self, view, prefix, locations):
+    @staticmethod
+    def on_query_completions( view, prefix, locations):
 
         logging.debug("on_query_completions view id is %s " % view.buffer_id())
         if not Tools.is_valid_view(view):

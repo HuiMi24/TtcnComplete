@@ -73,7 +73,6 @@ class TtcnCompleter(BaseCompleter):
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = json.load(f)
 
-        Tools.SHOW_DEFAULT_COMPLETIONS = [ ['abcadad']]
         #TtcnCompleter._get_import_item(self, view)
         
 
@@ -106,10 +105,7 @@ class TtcnCompleter(BaseCompleter):
         for module_name in self.import_modules:
             file_name.append(self._get_module_name_for_tags_file(self.type_tags_file_content, 
                                                                  module_name = module_name))
-
         logging.debug(file_name)
-
-        #self.import_item.append()
 
     @staticmethod
     def generate_tags_file(view, root_path, ttcn_base_type):
@@ -168,9 +164,9 @@ class TtcnCompleter(BaseCompleter):
 
             @staticmethod
             def get_variable_type(flie_body, row, col, variable_name):
-                variable_type_pattern = '^\s*(var)?\s*(template)?\s*(\w+)\s*%s[\s{;(]+' % variable_name
+                variable_type_pattern = '\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;()]+' % variable_name
                 for line in flie_body[row::-1]:
-                    m = re.match(variable_type_pattern, line)
+                    m = re.search(variable_type_pattern, line)
                     if m:
                         logging.debug(" variable type is: %s" % m.group(3))
                         return m.group(3)
