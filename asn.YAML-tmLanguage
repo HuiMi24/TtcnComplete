@@ -7,60 +7,57 @@ uuid: 77590f80-4b89-4efa-a1a5-0ca16869cff9
 
 patterns:
 
-- match: ^\s*([\w\-]+)\s*(::=)\s+(\w+)
-  captures:
+- begin: ([\w\-]+)
+  beginCaptures:
     '1': {name: entity.name.type.asn}
-    '2': {name: keyword.operator.asn}
-    '3': {name: support.type.asn}
-  comment: type definition
-
-- match: (\w+)[\s\n.]+DEFINITIONS 
-  captures:
-    '1': {name: entity.name.type.asn}
-
-- name: keyword.operator.asn
-  match: (::=)
-
-- name: string.quoted.single.asn 
-  match: \'[01]*\'B
-  comment: bitstring
-
-- name: string.quoted.single.asn
-  match: \'([a-fA-F0-9][a-fA-F0-9])*\'O
-  comment: octetstring
-
-- name: string.quoted.single.asn
-  match: \'[a-fA-F0-9]*\'H
-  comment: hexstring
-
-- name: string.quoted.double.asn
-  match: \".*\"
-  comment: string
-
-- name: constant.numeric.asn
-  match: \b[\d+|infinity|\-infinity]+\b
-  comment: numeric
-
-- name: entity.name.type.asn
-  match: var\s(\w+)\s(\w+)
-  captures:
-    '1': {name: entity.name.type.asn}
-    '2': {name: variable.parameter.asn}
-  comment: variable definition
-
-
-
-
-- include: '#builtin_types'
-- include: '#builtin_operator'
-- include: '#comment'
-- include: '#builtin_keyword'
+  end: (BEGIN)
+  endCaptures:
+    '1': {name: keyword.operator.asn}
+  patterns:
+  - include: '#builtin_types'
+  - include: '#builtin_operator'
+  - include: '#comment'
+  - include: '#builtin_keyword'
+  - include: '#base_type'
 
 repository:
 
+  base_type:
+    patterns:
+    - match: ^\s*([\w\-]+)\s*(::=)\s+(\w+)
+      captures:
+        '1': {name: entity.name.type.asn}
+        '2': {name: keyword.operator.asn}
+        '3': {name: support.type.asn}
+      comment: type definition
+    - name: keyword.operator.asn
+      match: (::=)
+
+    - name: string.quoted.single.asn 
+      match: \'[01]*\'B
+      comment: bitstring
+
+    - name: string.quoted.single.asn
+      match: \'([a-fA-F0-9][a-fA-F0-9])*\'O
+      comment: octetstring
+
+    - name: string.quoted.single.asn
+      match: \'[a-fA-F0-9]*\'H
+      comment: hexstring
+
+    - name: string.quoted.double.asn
+      match: \".*\"
+      comment: string
+
+    - name: constant.numeric.asn
+      match: \b[\d+|infinity|\-infinity]+\b
+      comment: numeric
+
+    - match: ([\w\-]+)
+      comment: variable definition
 
   builtin_types:
-    name: entity.name.type.asn
+    name: support.type.asn
     match: (?x) \b(ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|INTEGER|REAL|STRING|BIT|BOOLEAN|OCTET
                    |NULL|EMBEDDED|PDV|BMPString|IA5String|TeletexString|GeneralString|GraphicString|
                    ISO646String|NumericString|PrintableString|T61String|UniversalString|VideotexString|
@@ -87,7 +84,7 @@ repository:
         '1': {name: keyword.operator.asn}
     - match: |-
              (?x)
-             \b(DEFAULT|OPTIONAL|DEFINITIONS|BEGIN|END|IMPORTS|EXPORTS|FROM|IMPLICIT|EXPLICIT|
+             \b(DEFAULT|OPTIONAL|DEFINITIONS|BEGIN|END|IMPORTS|EXPORTS|FROM|IMPLICIT|EXPLICIT|AUTOMATIC|
              ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|TRUE|FALSE|MIN|MAX|optional|mandatory)\b
       captures:
         '1': {name: keyword.operator.asn}
@@ -99,6 +96,7 @@ repository:
     - name: comment.block.documentation.asn
       begin: --
       end: --
+
 
 
 ...

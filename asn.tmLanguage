@@ -11,127 +11,135 @@
 	<key>patterns</key>
 	<array>
 		<dict>
-			<key>captures</key>
+			<key>begin</key>
+			<string>([\w\-]+)</string>
+			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>entity.name.type.asn</string>
 				</dict>
-				<key>2</key>
+			</dict>
+			<key>end</key>
+			<string>(BEGIN)</string>
+			<key>endCaptures</key>
+			<dict>
+				<key>1</key>
 				<dict>
 					<key>name</key>
 					<string>keyword.operator.asn</string>
 				</dict>
-				<key>3</key>
-				<dict>
-					<key>name</key>
-					<string>support.type.asn</string>
-				</dict>
 			</dict>
-			<key>comment</key>
-			<string>type definition</string>
-			<key>match</key>
-			<string>^\s*([\w\-]+)\s*(::=)\s+(\w+)</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
+			<key>patterns</key>
+			<array>
 				<dict>
-					<key>name</key>
-					<string>entity.name.type.asn</string>
+					<key>include</key>
+					<string>#builtin_types</string>
 				</dict>
-			</dict>
-			<key>match</key>
-			<string>(\w+)[\s\n.]+DEFINITIONS</string>
-		</dict>
-		<dict>
-			<key>match</key>
-			<string>(::=)</string>
-			<key>name</key>
-			<string>keyword.operator.asn</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>bitstring</string>
-			<key>match</key>
-			<string>\'[01]*\'B</string>
-			<key>name</key>
-			<string>string.quoted.single.asn</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>octetstring</string>
-			<key>match</key>
-			<string>\'([a-fA-F0-9][a-fA-F0-9])*\'O</string>
-			<key>name</key>
-			<string>string.quoted.single.asn</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>hexstring</string>
-			<key>match</key>
-			<string>\'[a-fA-F0-9]*\'H</string>
-			<key>name</key>
-			<string>string.quoted.single.asn</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>string</string>
-			<key>match</key>
-			<string>\".*\"</string>
-			<key>name</key>
-			<string>string.quoted.double.asn</string>
-		</dict>
-		<dict>
-			<key>comment</key>
-			<string>numeric</string>
-			<key>match</key>
-			<string>\b[\d+|infinity|\-infinity]+\b</string>
-			<key>name</key>
-			<string>constant.numeric.asn</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
 				<dict>
-					<key>name</key>
-					<string>entity.name.type.asn</string>
+					<key>include</key>
+					<string>#builtin_operator</string>
 				</dict>
-				<key>2</key>
 				<dict>
-					<key>name</key>
-					<string>variable.parameter.asn</string>
+					<key>include</key>
+					<string>#comment</string>
 				</dict>
-			</dict>
-			<key>comment</key>
-			<string>variable definition</string>
-			<key>match</key>
-			<string>var\s(\w+)\s(\w+)</string>
-			<key>name</key>
-			<string>entity.name.type.asn</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#builtin_types</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#builtin_operator</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#comment</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#builtin_keyword</string>
+				<dict>
+					<key>include</key>
+					<string>#builtin_keyword</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#base_type</string>
+				</dict>
+			</array>
 		</dict>
 	</array>
 	<key>repository</key>
 	<dict>
+		<key>base_type</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.name.type.asn</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.asn</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>support.type.asn</string>
+						</dict>
+					</dict>
+					<key>comment</key>
+					<string>type definition</string>
+					<key>match</key>
+					<string>^\s*([\w\-]+)\s*(::=)\s+(\w+)</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(::=)</string>
+					<key>name</key>
+					<string>keyword.operator.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>bitstring</string>
+					<key>match</key>
+					<string>\'[01]*\'B</string>
+					<key>name</key>
+					<string>string.quoted.single.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>octetstring</string>
+					<key>match</key>
+					<string>\'([a-fA-F0-9][a-fA-F0-9])*\'O</string>
+					<key>name</key>
+					<string>string.quoted.single.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>hexstring</string>
+					<key>match</key>
+					<string>\'[a-fA-F0-9]*\'H</string>
+					<key>name</key>
+					<string>string.quoted.single.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>string</string>
+					<key>match</key>
+					<string>\".*\"</string>
+					<key>name</key>
+					<string>string.quoted.double.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>numeric</string>
+					<key>match</key>
+					<string>\b[\d+|infinity|\-infinity]+\b</string>
+					<key>name</key>
+					<string>constant.numeric.asn</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>variable definition</string>
+					<key>match</key>
+					<string>([\w\-]+)</string>
+				</dict>
+			</array>
+		</dict>
 		<key>builtin_keyword</key>
 		<dict>
 			<key>patterns</key>
@@ -159,7 +167,7 @@
 					</dict>
 					<key>match</key>
 					<string>(?x)
-\b(DEFAULT|OPTIONAL|DEFINITIONS|BEGIN|END|IMPORTS|EXPORTS|FROM|IMPLICIT|EXPLICIT|
+\b(DEFAULT|OPTIONAL|DEFINITIONS|BEGIN|END|IMPORTS|EXPORTS|FROM|IMPLICIT|EXPLICIT|AUTOMATIC|
 ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|TRUE|FALSE|MIN|MAX|optional|mandatory)\b</string>
 				</dict>
 			</array>
@@ -211,7 +219,7 @@ ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|TRUE|FALSE|MIN|MAX|optional|ma
 			<key>match</key>
 			<string>(?x) \b(ABSENT|PRESENT|SIZE|UNIVERSAL|APPLICATION|PRIVATE|INTEGER|REAL|STRING|BIT|BOOLEAN|OCTET |NULL|EMBEDDED|PDV|BMPString|IA5String|TeletexString|GeneralString|GraphicString| ISO646String|NumericString|PrintableString|T61String|UniversalString|VideotexString| VisibleString|ANY|DEFINED|OBJECT\s\+IDENTIFIER|UTF8String|CHOICE|SEQUENCE|SET|OF| ENUMERATED|CONSTRAINED|BY|WITH|COMPONENTS|CLASS|SYNTAX)\b[^-]</string>
 			<key>name</key>
-			<string>entity.name.type.asn</string>
+			<string>support.type.asn</string>
 		</dict>
 		<key>comment</key>
 		<dict>
