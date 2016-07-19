@@ -30,6 +30,10 @@ Copy this to Setting User
 	]
   ```
 
+## Usage ##
+- Open you code with Sublime.
+  + `Project->Add Folder to Project...`
+
 #Notes:
 1. It only support file end with ".ttcn"
 2. The module name must be same as the file name
