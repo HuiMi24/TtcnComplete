@@ -9,10 +9,14 @@ patterns:
 
 - match: ^\s*([\w\-]+)\s*(::=)\s+(\w+)
   captures:
-    '1': {name: entity.name.type.ttcn3}
+    '1': {name: entity.name.type.asn}
     '2': {name: keyword.operator.asn}
-    '3': {name: support.type.ttcn3}
+    '3': {name: support.type.asn}
   comment: type definition
+
+- match: (\w+)[\s\n.]+DEFINITIONS 
+  captures:
+    '1': {name: entity.name.type.asn}
 
 - name: keyword.operator.asn
   match: (::=)

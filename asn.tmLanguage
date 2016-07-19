@@ -16,7 +16,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.type.ttcn3</string>
+					<string>entity.name.type.asn</string>
 				</dict>
 				<key>2</key>
 				<dict>
@@ -26,13 +26,25 @@
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>support.type.ttcn3</string>
+					<string>support.type.asn</string>
 				</dict>
 			</dict>
 			<key>comment</key>
 			<string>type definition</string>
 			<key>match</key>
 			<string>^\s*([\w\-]+)\s*(::=)\s+(\w+)</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.type.asn</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(\w+)[\s\n.]+DEFINITIONS</string>
 		</dict>
 		<dict>
 			<key>match</key>
