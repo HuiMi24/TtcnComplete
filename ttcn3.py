@@ -1,3 +1,8 @@
+"""TtcnComplete for Sublime Text 3.
+Provides goto definition, auto-completion and syntax highlight for TTCN-3 and ASN.1
+All rights reserve by author(Mi Hui, mihui24@gmail.com).
+"""
+
 import sublime, sublime_plugin
 import logging
 import imp
@@ -63,7 +68,7 @@ class TtcnComplete(sublime_plugin.EventListener):
             logging.debug(" saving view: %s", view.buffer_id())
             if not completer:
                 return
-            completer.update(view)
+            completer.init(view)
 
 
     @staticmethod

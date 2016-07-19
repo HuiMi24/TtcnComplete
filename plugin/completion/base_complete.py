@@ -26,8 +26,8 @@ class BaseCompleter(object):
         return
 
     @staticmethod
-    def _get_import_modules(file_name, flie_body):
-        import_pattern = re.compile('\s*import\s*from\s*(\w+)')
+    def _get_import_modules(file_name, flie_body, all=''):
+        import_pattern = re.compile('\s*import\s*from\s*(\w+)\s+%s' % all)
         import_modules = []
         for line in flie_body:
             m = re.match(import_pattern, line)

@@ -1,8 +1,4 @@
 """Contains class for completer
-
-Attributes:
-    log (logging.Logger): logger for this module
-
 """
 
 import sublime
@@ -73,17 +69,6 @@ class TtcnCompleter(BaseCompleter):
             with open(type_tags_path, 'r+') as f:
                 self.type_tags_file_content = json.load(f)
 
-        #TtcnCompleter._get_import_item(self, view)
-        
-
-    def update(self, view):
-        """update build for current view
-
-        Args:
-            view (sublime.View): this view
-        """
-        pass
-
     def remove(self, view_id):
         """remove compile flags for view
 
@@ -100,12 +85,13 @@ class TtcnCompleter(BaseCompleter):
 
     #not impletment yet
     def _get_import_item(self, view):
+        import_all_modules = BaseCompleter._get_import_modules(self.file_name, 
+                                                               self.flie_body.split('\n'), 
+                                                               all='all')
+        #remove late element, the last element is current file.
+        import_all_modules.pop()
+        logging.debug(" import all modules are %s", import_all_modules)
         flie_body_lines = self.flie_body.split('\n')
-        file_name = []
-        for module_name in self.import_modules:
-            file_name.append(self._get_module_name_for_tags_file(self.type_tags_file_content, 
-                                                                 module_name = module_name))
-        logging.debug(file_name)
 
     @staticmethod
     def generate_tags_file(view, root_path, ttcn_base_type):
@@ -164,7 +150,7 @@ class TtcnCompleter(BaseCompleter):
 
             @staticmethod
             def get_variable_type(flie_body, row, col, variable_name):
-                variable_type_pattern = '\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;()]+' % variable_name
+                variable_type_pattern = '\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;(),]+' % variable_name
                 for line in flie_body[row::-1]:
                     m = re.search(variable_type_pattern, line)
                     if m:
