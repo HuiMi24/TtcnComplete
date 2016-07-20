@@ -12,7 +12,7 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
     [here](https://github.com/HuiMi24/TtcnComplete).
   + `Preferences->Browse Packages...`, copy "TtcnComplete" to open folder
 - Package Control
-  + Package Control doesn't include this plugin yet.
+  + `Preferences->Package Control->Install Package`, search TtcnComplete.
 
 ## Settings auto completion trigger ##
 
