@@ -1,4 +1,4 @@
-# Sublime TTCN-3 plugin
+# Sublime Text 3 TTCN-3 plugin: TtcnComplete
 
 Sublime Text 3 plugin that offers auto-completion, Goto Definition and syntax highlight for TTCN-3 and ASN.1
 
@@ -13,6 +13,7 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
   + `Preferences->Browse Packages...`, copy "TtcnComplete" to open folder
 - Package Control
   + `Preferences->Package Control->Install Package`, search TtcnComplete.
+  + Restart Sublime
 
 ## Settings auto completion trigger ##
 
