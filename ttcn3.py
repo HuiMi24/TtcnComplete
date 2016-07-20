@@ -29,10 +29,11 @@ def plugin_loaded():
     global settings
 
     settings = plugin_settings.Settings()
+    logging.debug(" plugin loaded %s", settings.debug_mode)
     if settings.debug_mode:
         logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
     else:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.INFO)
     completer = ttcn_complete.TtcnCompleter()
 
 class TtcnComplete(sublime_plugin.EventListener):
