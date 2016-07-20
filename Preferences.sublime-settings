@@ -1,0 +1,12 @@
+{
+  // DO NOT MODIFY!
+  // Your changes will be overwritten upon plugin update.
+  // To change the triggers, copy these lines to your user preferences.
+  "auto_complete_triggers":
+  [
+    {
+      "characters": ".",
+      "selector": "source.ttcn3"
+    }
+  ],
+}

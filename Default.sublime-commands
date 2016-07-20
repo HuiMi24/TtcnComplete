@@ -1,0 +1,17 @@
+[
+    {
+        "caption": "TtcnComplete: Settings - Default",
+        "command": "open_file",
+        "args": {"file": "${packages}/TtcnComplete/TtcnComplete.sublime-settings"}
+    },
+    {
+        "caption": "TtcnComplete: Settings - User",
+        "command": "open_file",
+        "args": {"file": "${packages}/User/TtcnComplete.sublime-settings"}
+    },
+    {
+        "caption": "TtcnComplete: Open completion triggers location",
+        "command": "open_file",
+        "args": {"file": "${packages}/TtcnComplete/Preferences.sublime-settings"}
+    },
+]
