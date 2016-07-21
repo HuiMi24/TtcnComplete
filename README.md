@@ -20,5 +20,5 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
   + `Project->Add Folder to Project...`
 
 #Notes:
-1. It only support file end with ".ttcn"
+1. It  support file extension ".ttcn", ".ttcn3"
 2. The module name must be same as the file name
