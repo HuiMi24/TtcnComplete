@@ -15,22 +15,6 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
   + `Preferences->Package Control->Install Package`, search TtcnComplete.
   + Restart Sublime
 
-## Settings auto completion trigger ##
-
-Copy this to Setting User
-
-`Preferences->Setting-User`
-
-  ```json
-	"auto_complete_triggers":
-	[
-		{
-			"characters": ".",
-			"selector": "source.ttcn3"
-		}
-	]
-  ```
-
 ## Usage ##
 - Open you code with Sublime.
   + `Project->Add Folder to Project...`
