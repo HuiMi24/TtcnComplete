@@ -97,7 +97,7 @@ class TtcnCompleter(BaseCompleter):
     def generate_tags_file(view, root_path, ttcn_base_type):
         ttcn_pattern = '^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(ttcn_base_type)
         ttcn_gen = TagsFileGenerator(root_path,
-                                     'ttcn')
+                                     ['ttcn', 'ttcn3'])
         tags = ttcn_gen.generate_tags(ttcn_pattern)
         ttcn_gen.output_to_file(tags, '.type_tags')
 

@@ -2,7 +2,7 @@
 ---
 name: TTCN-3
 scopeName: source.ttcn3
-fileTypes: [ttcn]
+fileTypes: [ttcn, ttcn3]
 #uuid: bb8a6bfa-adfe-45b6-aa12-b1bda309e67d
 
 patterns:

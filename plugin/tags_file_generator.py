@@ -8,13 +8,14 @@ class TagsFileGenerator(object):
     def __init__(self, root_path, file_extension):
         self.root_path = root_path
         self.files = []
-        self.file_extension = file_extension
+        self.file_extension = '|'.join(file_extension) + "$"
+        logging.debug(" file extension is %s", self.file_extension)
         self._find()
 
     def _find(self):
         for root, dirs, files in os.walk(self.root_path):
             for name in files:
-                if name.endswith(self.file_extension):
+                if re.search(self.file_extension, name):
                     self.files.append(os.path.join(root, name))
         return
 

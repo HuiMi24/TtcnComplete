@@ -5,6 +5,7 @@
 	<key>fileTypes</key>
 	<array>
 		<string>ttcn</string>
+		<string>ttcn3</string>
 	</array>
 	<key>name</key>
 	<string>TTCN-3</string>

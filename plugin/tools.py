@@ -28,7 +28,7 @@ class Tools(object):
 
     syntax_regex = re.compile("\/([^\/]+)\.(?:tmLanguage|sublime-syntax)")
 
-    valid_extensions = [".ttcn"]
+    valid_extensions = [".ttcn", "ttcn3"]
     valid_syntax = ["ttcn3"]
 
     SHOW_DEFAULT_COMPLETIONS = None

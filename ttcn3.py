@@ -29,7 +29,7 @@ def plugin_loaded():
     global settings
 
     settings = plugin_settings.Settings()
-    logging.debug(" plugin loaded %s", settings.debug_mode)
+    logging.info(" plugin loaded %s" % settings.debug_mode)
     if settings.debug_mode:
         logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
     else:
