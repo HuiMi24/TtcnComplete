@@ -119,8 +119,6 @@
 
         { "trigger": "testcase", "contents": "testcase $0() runs on system {\n}"},
         { "trigger": "fucntion", "contents": "function $0() runs on {\n}"},
-        { "trigger": "template", "contents": "template"}, 
-
-		{ "trigger": "foo\ttest", "contents": "foobar" }
+        { "trigger": "template", "contents": "template"}
 	]
 }
