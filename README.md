@@ -20,6 +20,6 @@ This plugin aims to provide easy-to-use, minimal-setup autocompletions for TTCN-
   + `Project->Add Folder to Project...`
 
 #Notes:
-1. It  support file extension ".ttcn", ".ttcn3"
+1. Support TTCN-3 file extension ".ttcn", ".ttcn3", ASN.1 file extension ".asn", module parameter file extension ".par". If the extension does not included, please post an issue or commit a pull request.
 2. The module name must be same as the file name
 3. Currently, it only tested on Windows and Linux. Mac OS not tested, however, it should work.
