@@ -49,15 +49,15 @@ class TtcnCompleter(BaseCompleter):
 
         self.flie_body = TtcnCompleter._get_current_file_body(view)
         self.import_modules =  BaseCompleter._get_import_modules(self.file_name, self.flie_body.split('\n'))
-
+        print(" the type tags file too old, generate new one")
         if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
             logging.info(" the type tags file does not exist, generate new one")
             TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
         else:
             mtime = os.path.getmtime(os.path.join(self.open_folder, '.type_tags'))
             current_time = time.time()
-            #generate tags file ever 5 days
-            if current_time - mtime > 60*60*24*5:
+            #generate tags file every 5 minutes
+            if current_time - mtime > 60*5:
                 logging.info(" the type tags file too old, generate new one")
                 TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
 
@@ -151,7 +151,7 @@ class TtcnCompleter(BaseCompleter):
             @staticmethod
             def get_variable_type(flie_body, row, col, variable_name):
                 variable_type_pattern = '\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;(),]+' % variable_name
-                for line in flie_body[row::-1]:
+                for line in flie_body[row:row - 500:-1]:
                     m = re.search(variable_type_pattern, line)
                     if m:
                         logging.debug(" variable type is: %s" % m.group(3))
