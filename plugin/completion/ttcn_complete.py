@@ -49,7 +49,7 @@ class TtcnCompleter(BaseCompleter):
 
         self.flie_body = TtcnCompleter._get_current_file_body(view)
         self.import_modules =  BaseCompleter._get_import_modules(self.file_name, self.flie_body.split('\n'))
-        print(" the type tags file too old, generate new one")
+
         if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
             logging.info(" the type tags file does not exist, generate new one")
             TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
