@@ -3,12 +3,12 @@ Provides goto definition, auto-completion and syntax highlight for TTCN-3 and AS
 All rights reserve by author(Mi Hui, mihui24@gmail.com).
 """
 
-import sublime, sublime_plugin
+import sublime
+import sublime_plugin
 import logging
 import imp
-import os.path as path
 
-from threading import Thread  
+from threading import Thread
 
 from .plugin import tools
 from .plugin import plugin_settings
@@ -23,6 +23,7 @@ imp.reload(ttcn_complete)
 completer = None
 settings = None
 
+
 def plugin_loaded():
 
     global completer
@@ -31,10 +32,13 @@ def plugin_loaded():
     settings = plugin_settings.Settings()
     logging.info(" plugin loaded %s" % settings.debug_mode)
     if settings.debug_mode:
-        logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
+        logging.basicConfig(
+            format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.DEBUG)
     else:
-        logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.INFO)
+        logging.basicConfig(
+            format='[%(asctime)s] %(levelname)s: %(message)s', level=logging.INFO)
     completer = ttcn_complete.TtcnCompleter()
+
 
 class TtcnComplete(sublime_plugin.EventListener):
 
@@ -51,11 +55,13 @@ class TtcnComplete(sublime_plugin.EventListener):
             if not completer:
                 return
             if completer.exist_for_view(view.buffer_id()):
-                logging.debug(" view %s, already has a completer", view.buffer_id())
+                logging.debug(" view %s, already has a completer",
+                              view.buffer_id())
                 return
             logging.info(" init completer for view id %s" % view.buffer_id())
             completer.init(view)
-            logging.info(" init completer for view id %s done" % view.buffer_id())
+            logging.info(" init completer for view id %s done" %
+                         view.buffer_id())
 
     @staticmethod
     def on_post_save_async(view):
@@ -70,7 +76,6 @@ class TtcnComplete(sublime_plugin.EventListener):
             if not completer:
                 return
             completer.init(view)
-
 
     @staticmethod
     def on_close(view):
@@ -87,7 +92,7 @@ class TtcnComplete(sublime_plugin.EventListener):
             completer.remove(view.buffer_id())
 
     @staticmethod
-    def on_query_completions( view, prefix, locations):
+    def on_query_completions(view, prefix, locations):
 
         logging.debug("on_query_completions view id is %s " % view.buffer_id())
         if not Tools.is_valid_view(view):
@@ -111,7 +116,8 @@ class TtcnComplete(sublime_plugin.EventListener):
             logging.debug(" show default completions")
             return Tools.SHOW_DEFAULT_COMPLETIONS
 
-        logging.debug(" starting async auto_complete at pos: %s" % locations[0])
+        logging.debug(" starting async auto_complete at pos: %s" %
+                      locations[0])
         completion_thread = Thread(
             target=completer.complete,
             args=[view, locations[0]])
@@ -120,5 +126,3 @@ class TtcnComplete(sublime_plugin.EventListener):
 
         logging.debug(" show default completions last")
         return Tools.HIDE_DEFAULT_COMPLETIONS
-
-

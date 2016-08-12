@@ -2,14 +2,21 @@ import os
 import re
 import logging
 
+
 class BaseCompleter(object):
 
-    ttcn_base_type = ["integer","float","charstring","bitstring","hexstring","octetstring","record","set","union","enumerated"]
-    simple_types = ["boolean","char","float","integer","enumerated","charstring","octetstring","hexstring","bitstring"]
+    ttcn_base_type = ["integer", "float", "charstring", "bitstring",
+                      "hexstring", "octetstring", "record", "set", "union",
+                      "enumerated"]
+    simple_types = ["boolean", "char", "float", "integer", "enumerated",
+                    "charstring", "octetstring", "hexstring", "bitstring"]
 
     @staticmethod
-    def _get_module_name_for_tags_file(tags_file_context, type_name = None, module_name = None):
-        logging.debug(" in _get_module_name_for_tags_file the type name is %s", type_name)
+    def _get_module_name_for_tags_file(tags_file_context,
+                                       type_name=None,
+                                       module_name=None):
+        logging.debug(
+            " in _get_module_name_for_tags_file the type name is %s", type_name)
         return tags_file_context.get(type_name)
 
     @staticmethod
@@ -17,7 +24,7 @@ class BaseCompleter(object):
         logging.debug("tags_module %s", tags_moudles)
         logging.debug("import_modules %s", import_modules)
         if tags_moudles is None:
-            #the last item should be current file
+            # the last item should be current file
             return import_modules[-1]
         for tags_module in tags_moudles:
             for import_module in import_modules:
@@ -32,8 +39,8 @@ class BaseCompleter(object):
         for line in flie_body:
             m = re.match(import_pattern, line)
             if m:
-                #logging.debug(" import module: %s", m.group(1))
+                # logging.debug(" import module: %s", m.group(1))
                 import_modules.append(m.group(1))
-        #the last item is current module
+        # the last item is current module
         import_modules.append(os.path.basename(file_name.split('.')[0]))
         return import_modules

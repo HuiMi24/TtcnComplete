@@ -11,6 +11,7 @@ import logging
 
 PKG_NAME = path.basename(path.dirname(path.dirname(__file__)))
 
+
 class PosStatus:
     """ Enum class for position status
 
@@ -22,6 +23,7 @@ class PosStatus:
     COMPLETION_NEEDED = 0
     COMPLETION_NOT_NEEDED = 1
     WRONG_TRIGGER = 2
+
 
 class Tools(object):
     """docstring for Tools"""
@@ -63,9 +65,11 @@ class Tools(object):
         """
         syntax = Tools.get_view_syntax(view)
         if syntax in Tools.valid_syntax:
-            logging.debug("%s file has valid syntax: %s" % (view.file_name(),syntax) )
+            logging.debug("%s file has valid syntax: %s" %
+                          (view.file_name(), syntax))
             return True
-        logging.debug("%s file has unsupported syntax: %s" % (view.file_name(),syntax) )
+        logging.debug("%s file has unsupported syntax: %s" %
+                      (view.file_name(), syntax))
         return False
 
     @staticmethod
@@ -86,7 +90,6 @@ class Tools(object):
         if view.is_scratch():
             return False
         return True
-
 
     @staticmethod
     def get_position_status(point, view, settings):
@@ -119,7 +122,8 @@ class Tools(object):
                     logging.debug(" matched trigger %s" % trigger)
                     return PosStatus.COMPLETION_NEEDED
                 else:
-                    logging.debug(" wrong trigger %s%s" % (prev_char, curr_char))
+                    logging.debug(" wrong trigger %s%s" %
+                                  (prev_char, curr_char))
                     wrong_trigger_found = True
         if wrong_trigger_found:
             logging.debug(" wrong trigger fired")

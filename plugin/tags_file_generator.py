@@ -3,8 +3,10 @@ import os
 import logging
 import json
 
+
 class TagsFileGenerator(object):
     """docstring for TagsFileGenerator"""
+
     def __init__(self, root_path, file_extension):
         self.root_path = root_path
         self.files = []
@@ -24,7 +26,7 @@ class TagsFileGenerator(object):
         for file in self.files:
             if os.path.exists(file):
                 with open(file, encoding="ISO-8859-1") as f:
-                    file_content =  f.readlines()
+                    file_content = f.readlines()
                 for line in file_content:
                     m = re.match(pattern, line)
                     if m:
@@ -37,5 +39,3 @@ class TagsFileGenerator(object):
     def output_to_file(self, tags, tags_file_name):
         with open(os.path.join(self.root_path, tags_file_name), 'w+') as f:
             json.dump(tags, f)
-
-

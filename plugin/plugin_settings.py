@@ -3,6 +3,7 @@ import logging
 
 from .tools import PKG_NAME
 
+
 class Settings(object):
     """
     class that encapsulates sublime settings
@@ -28,7 +29,8 @@ class Settings(object):
         """
         Load settings from sublime dictionary to internal variables
         """
-        self.sublime_settings = sublime.load_settings(PKG_NAME + ".sublime-settings")
+        self.sublime_settings = sublime.load_settings(
+            PKG_NAME + ".sublime-settings")
         self.debug_mode = self.sublime_settings.get("debug_mode")
         self.triggers = self.sublime_settings.get("triggers")
 

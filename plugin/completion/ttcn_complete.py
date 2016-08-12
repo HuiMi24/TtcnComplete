@@ -16,6 +16,7 @@ from . import base_complete
 
 imp.reload(base_complete)
 
+
 class TtcnCompleter(BaseCompleter):
     """A class for ttcn completions
 
@@ -48,22 +49,27 @@ class TtcnCompleter(BaseCompleter):
         self.completed_views.append(view.buffer_id())
 
         self.flie_body = TtcnCompleter._get_current_file_body(view)
-        self.import_modules =  BaseCompleter._get_import_modules(self.file_name, self.flie_body.split('\n'))
+        self.import_modules = BaseCompleter._get_import_modules(
+            self.file_name, self.flie_body.split('\n'))
 
         if not os.path.exists(os.path.join(self.open_folder, '.type_tags')):
-            logging.info(" the type tags file does not exist, generate new one")
-            TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
+            logging.info(
+                " the type tags file does not exist, generate new one")
+            TtcnCompleter.generate_tags_file(
+                view, self.open_folder, self.ttcn_base_type)
         else:
-            mtime = os.path.getmtime(os.path.join(self.open_folder, '.type_tags'))
+            mtime = os.path.getmtime(os.path.join(
+                self.open_folder, '.type_tags'))
             current_time = time.time()
-            #generate tags file every 5 minutes
-            if current_time - mtime > 60*5:
+            # generate tags file every 5 minutes
+            if current_time - mtime > 60 * 5:
                 logging.info(" the type tags file too old, generate new one")
-                TtcnCompleter.generate_tags_file(view, self.open_folder, self.ttcn_base_type)
+                TtcnCompleter.generate_tags_file(
+                    view, self.open_folder, self.ttcn_base_type)
 
         type_tags_path = os.path.join(self.open_folder, '.type_tags')
         if not (self.open_folder and os.path.exists(type_tags_path)):
-            type_tags_file_content = []
+            self.type_tags_file_content = []
         else:
             logging.debug(" open type tags file %s", type_tags_path)
             with open(type_tags_path, 'r+') as f:
@@ -83,19 +89,21 @@ class TtcnCompleter(BaseCompleter):
         flie_body = view.substr(sublime.Region(0, view.size()))
         return flie_body
 
-    #not impletment yet
+    # not impletment yet
     def _get_import_item(self, view):
-        import_all_modules = BaseCompleter._get_import_modules(self.file_name, 
-                                                               self.flie_body.split('\n'), 
+        import_all_modules = BaseCompleter._get_import_modules(self.file_name,
+                                                               self.flie_body.split(
+                                                                   '\n'),
                                                                all='all')
-        #remove late element, the last element is current file.
+        # remove late element, the last element is current file.
         import_all_modules.pop()
         logging.debug(" import all modules are %s", import_all_modules)
-        flie_body_lines = self.flie_body.split('\n')
+        # flie_body_lines = self.flie_body.split('\n')
 
     @staticmethod
     def generate_tags_file(view, root_path, ttcn_base_type):
-        ttcn_pattern = '^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(ttcn_base_type)
+        ttcn_pattern = '^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(
+            ttcn_base_type)
         ttcn_gen = TagsFileGenerator(root_path,
                                      ['ttcn', 'ttcn3'])
         tags = ttcn_gen.generate_tags(ttcn_pattern)
@@ -111,7 +119,8 @@ class TtcnCompleter(BaseCompleter):
 
         start = time.time()
         logging.info(" started code complete for view %s", view.buffer_id())
-        self.completions = TtcnCompleter._parse_completions(self, view, row, col)
+        self.completions = TtcnCompleter._parse_completions(
+            self, view, row, col)
         self.async_completions_ready = True
         TtcnCompleter._reload_completions(view)
         end = time.time()
@@ -129,9 +138,9 @@ class TtcnCompleter(BaseCompleter):
         logging.debug(" reload completion tooltip")
         view.run_command('hide_auto_complete')
         view.run_command('auto_complete', {
-                            'disable_auto_insert': True,
-                            'api_completions_only': True,
-                            'next_competion_if_showing': True, })
+            'disable_auto_insert': True,
+            'api_completions_only': True,
+            'next_competion_if_showing': True, })
 
     def _parse_completions(self, view, row, col):
 
@@ -139,7 +148,8 @@ class TtcnCompleter(BaseCompleter):
             @staticmethod
             def get_variable_name(flie_body, row, col):
                 cur_line = flie_body[row].strip()
-                logging.debug(" in get_variable_name current line is %s", cur_line)
+                logging.debug(
+                    " in get_variable_name current line is %s", cur_line)
                 variable_name_pattern = '(\w+)\.'
                 if str:
                     m = re.findall(variable_name_pattern, cur_line)
@@ -159,12 +169,15 @@ class TtcnCompleter(BaseCompleter):
                 return
 
             @staticmethod
-            def _get_completions_from_file(root_path, variable_type, variables,module_name):
+            def _get_completions_from_file(root_path,
+                                           variable_type,
+                                           variables,
+                                           module_name):
                 for i in range(len(variables)):
                     variable = variables[i]
                     if i > 0:
-                        temp = [ [sub.get('type_name'), sub.get('module_name')] \
-                            for sub in comp_dict.get(variable_type) if sub.get('variable_name') == variable]
+                        temp = [[sub.get('type_name'), sub.get('module_name')]
+                                for sub in comp_dict.get(variable_type) if sub.get('variable_name') == variable]
                         variable_type, module_name = temp[0][0], temp[0][1]
                         logging.debug("variable type is %s", variable_type)
                         logging.debug("module name is %s", module_name)
@@ -174,12 +187,12 @@ class TtcnCompleter(BaseCompleter):
                                                   variable_type)
                         c.parse_type()
                         comp_dict = c.completion_result
-                    completions = [ [sub.get('variable_name') + '\t    ' + sub.get('type_name') + ' ',\
-                                     sub.get('variable_name')]for sub in comp_dict.get(variable_type)]
+                    completions = [[sub.get('variable_name') + '\t    ' + sub.get('type_name') + ' ',
+                                    sub.get('variable_name')]for sub in comp_dict.get(variable_type)]
                 return completions
 
         completions = []
-        #update file body
+        # update file body
         self.flie_body = TtcnCompleter._get_current_file_body(view)
         flie_body_lines = self.flie_body.split('\n')
 
@@ -190,13 +203,16 @@ class TtcnCompleter(BaseCompleter):
             logging.debug(" variable_name is null")
             return completions
 
-        variable_type = Parser.get_variable_type(flie_body_lines, row, col, variable_name[0])
+        variable_type = Parser.get_variable_type(
+            flie_body_lines, row, col, variable_name[0])
         if not variable_type:
             logging.debug(" variable_type is null")
             return completions
 
-        tags_moudles = self._get_module_name_for_tags_file(self.type_tags_file_content, variable_type)
-        module_name = self._check_type_from_module(self.import_modules, tags_moudles)
+        tags_moudles = self._get_module_name_for_tags_file(
+            self.type_tags_file_content, variable_type)
+        module_name = self._check_type_from_module(
+            self.import_modules, tags_moudles)
 
         logging.debug(" module name is %s", module_name)
         if module_name:
