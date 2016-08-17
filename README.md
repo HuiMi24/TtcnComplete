@@ -1,3 +1,6 @@
+## Next Plan ##
+I will add TTCN-3 code formatter/lint in next release. If you find any bug or you have any new idea, please feel free to contact me. You can also commit your code with pull request.
+
 # Sublime Text 3 TTCN-3 plugin: TtcnComplete
 
 Sublime Text 3 plugin that offers auto-completion, Goto Definition and syntax highlight for TTCN-3 and ASN.1
