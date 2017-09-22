@@ -2,7 +2,7 @@
 ---
 name: ASN
 scopeName: source.asn
-fileTypes: [asn]
+fileTypes: [asn, asn1]
 uuid: 77590f80-4b89-4efa-a1a5-0ca16869cff9
 
 patterns:
