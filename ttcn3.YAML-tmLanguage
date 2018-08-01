@@ -90,7 +90,7 @@ patterns:
   comment: hexstring
 
 - name: string.quoted.double.ttcn3
-  match: \".*\"
+  match: \"[^\"]*\"
   comment: string
 
 - name: constant.numeric.ttcn3

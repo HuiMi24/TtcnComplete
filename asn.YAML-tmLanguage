@@ -46,7 +46,7 @@ repository:
       comment: hexstring
 
     - name: string.quoted.double.asn
-      match: \".*\"
+      match: \"[^\"]*\"
       comment: string
 
     - name: constant.numeric.asn

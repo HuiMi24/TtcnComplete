@@ -265,7 +265,7 @@
 			<key>comment</key>
 			<string>string</string>
 			<key>match</key>
-			<string>\".*\"</string>
+			<string>\"[^\"]*\"</string>
 			<key>name</key>
 			<string>string.quoted.double.ttcn3</string>
 		</dict>

@@ -38,7 +38,7 @@
 			<key>comment</key>
 			<string>string</string>
 			<key>match</key>
-			<string>\".*\"</string>
+			<string>\"[^\"]*\"</string>
 			<key>name</key>
 			<string>string.quoted.double.par</string>
 		</dict>
