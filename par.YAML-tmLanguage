@@ -20,7 +20,7 @@ patterns:
   comment: hexstring
 
 - name: string.quoted.double.par
-  match: \".*\"
+  match: \"[^\"]*\"
   comment: string
 
 - name: constant.numeric.par

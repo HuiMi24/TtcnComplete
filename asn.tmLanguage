@@ -5,6 +5,7 @@
 	<key>fileTypes</key>
 	<array>
 		<string>asn</string>
+		<string>asn1</string>
 	</array>
 	<key>name</key>
 	<string>ASN</string>
@@ -120,7 +121,7 @@
 					<key>comment</key>
 					<string>string</string>
 					<key>match</key>
-					<string>\".*\"</string>
+					<string>\"[^\"]*\"</string>
 					<key>name</key>
 					<string>string.quoted.double.asn</string>
 				</dict>
