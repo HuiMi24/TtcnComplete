@@ -44,8 +44,19 @@ class TtcnCompleter(BaseCompleter):
         if not Tools.is_valid_view(view):
             return
 
+        window = view.window()
+        folders = window.folders() if window else []
+        if not folders:
+            # The type tags file is written into the project folder and the
+            # tag scan walks it, so a view that is not inside a folder cannot
+            # be completed. Leave it uninitialised rather than raising
+            # IndexError on folders()[0].
+            logging.info(" view %s is not inside a folder, skip init",
+                         view.buffer_id())
+            return
+
         self.file_name = view.file_name()
-        self.open_folder = view.window().folders()[0]
+        self.open_folder = folders[0]
         self.completed_views.append(view.buffer_id())
 
         self.flie_body = TtcnCompleter._get_current_file_body(view)
@@ -68,7 +79,7 @@ class TtcnCompleter(BaseCompleter):
                     view, self.open_folder, self.ttcn_base_type)
 
         type_tags_path = os.path.join(self.open_folder, '.type_tags')
-        if not (self.open_folder and os.path.exists(type_tags_path)):
+        if not os.path.exists(type_tags_path):
             self.type_tags_file_content = []
         else:
             logging.debug(" open type tags file %s", type_tags_path)
