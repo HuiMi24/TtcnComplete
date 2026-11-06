@@ -103,6 +103,13 @@ class TtcnComplete(sublime_plugin.EventListener):
             logging.debug(" completer is invalid")
             return Tools.SHOW_DEFAULT_COMPLETIONS
 
+        if not completer.exist_for_view(view.buffer_id()):
+            # init() skips views that are not inside a folder; their
+            # completion state was never built, so fall back to Sublime's
+            # own completions instead of using it.
+            logging.debug(" view id %s has no completer" % view.buffer_id())
+            return Tools.SHOW_DEFAULT_COMPLETIONS
+
         if completer.async_completions_ready:
             completer.async_completions_ready = False
             #logging.debug(" completions result is %s", completer.completions)
