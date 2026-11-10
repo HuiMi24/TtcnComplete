@@ -36,12 +36,12 @@ class CompleteDictGenerator(BaseCompleter):
 
     def parse_type(self):
         if self.type_name:
-            type_pattern = '^\s*type\s+(%s)\s+(%s)[\s{;(]+' % (
+            type_pattern = r'^\s*type\s+(%s)\s+(%s)[\s{;(]+' % (
                 '|'.join(self.ttcn_base_type), self.type_name)
         else:
-            type_pattern = '^\s*type\s+(%s)\s+(\w+)' % '|'.join(
+            type_pattern = r'^\s*type\s+(%s)\s+(\w+)' % '|'.join(
                 self.ttcn_base_type)
-        list_pattern = '^\s*type\s+(record|set)\s+(of|length)'
+        list_pattern = r'^\s*type\s+(record|set)\s+(of|length)'
         i = 0
         while i < len(self.file_context):
             if re.match(list_pattern, self.file_context[i]):
@@ -69,7 +69,7 @@ class CompleteDictGenerator(BaseCompleter):
                                                                      simple_type=True)]
                     i += 1
                     continue
-                subtype_pattern = re.compile('^\s*({)?\s+(\w+)\s+(\w+)')
+                subtype_pattern = re.compile(r'^\s*({)?\s+(\w+)\s+(\w+)')
                 i += 1
                 if re.match('{', self.file_context[i]):
                     # skip single line {
@@ -100,7 +100,7 @@ class CompleteDictGenerator(BaseCompleter):
                                                  variable_name=sub_variable_name,
                                                  simple_type=False))
                     # match the end of this record
-                    m = re.match('\s*}\s*', self.file_context[i])
+                    m = re.match(r'\s*}\s*', self.file_context[i])
                     if m:
                         logging.debug(" at the end of type %s",
                                       parent_type_name)
