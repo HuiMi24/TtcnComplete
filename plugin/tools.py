@@ -28,7 +28,7 @@ class PosStatus:
 class Tools(object):
     """docstring for Tools"""
 
-    syntax_regex = re.compile("\/([^\/]+)\.(?:tmLanguage|sublime-syntax)")
+    syntax_regex = re.compile(r"\/([^\/]+)\.(?:tmLanguage|sublime-syntax)")
 
     valid_extensions = [".ttcn", "ttcn3"]
     valid_syntax = ["ttcn3"]

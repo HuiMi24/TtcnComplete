@@ -113,7 +113,7 @@ class TtcnCompleter(BaseCompleter):
 
     @staticmethod
     def generate_tags_file(view, root_path, ttcn_base_type):
-        ttcn_pattern = '^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(
+        ttcn_pattern = r'^\s*(type)\s+(%s)+\s+([a-zA-Z0-9_]+)' % '|'.join(
             ttcn_base_type)
         ttcn_gen = TagsFileGenerator(root_path,
                                      ['ttcn', 'ttcn3'])
@@ -161,7 +161,7 @@ class TtcnCompleter(BaseCompleter):
                 cur_line = flie_body[row].strip()
                 logging.debug(
                     " in get_variable_name current line is %s", cur_line)
-                variable_name_pattern = '(\w+)\.'
+                variable_name_pattern = r'(\w+)\.'
                 if str:
                     m = re.findall(variable_name_pattern, cur_line)
                     if m:
@@ -171,7 +171,7 @@ class TtcnCompleter(BaseCompleter):
 
             @staticmethod
             def get_variable_type(flie_body, row, col, variable_name):
-                variable_type_pattern = '\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;(),]+' % variable_name
+                variable_type_pattern = r'\s*(var|in|inout)?\s*(template)?\s*(\w+)\s*%s[\s{;(),]+' % variable_name
                 for line in flie_body[row:row - 500:-1]:
                     m = re.search(variable_type_pattern, line)
                     if m:
